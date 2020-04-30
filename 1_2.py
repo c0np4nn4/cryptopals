@@ -1,4 +1,5 @@
 from cryptopals import fixed_bytes_XOR
+from binascii import unhexlify
 
 def main():
 	one = "1c0111001f010100061a024b53535009181c"
@@ -9,7 +10,10 @@ def main():
 	
 	result = fixed_bytes_XOR(one_bytes, two_bytes)
 	
-	print(result.decode())
+	print(result)	
+	
+	# Decrypted message is ...
+	print(unhexlify(result))
 
 if __name__ == "__main__":
 	main()
