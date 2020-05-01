@@ -1,5 +1,6 @@
 from binascii import hexlify 
-from cryptopals import fixed_bytes_XOR
+from cryptopals import fixed_bytes_XOR, repeating_key_XOR
+
 def main():
 
     '''
@@ -26,26 +27,14 @@ def main():
 
     
     msg = "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal" 
-    key = "YELLO MACHINE"
+    key = "ICE"
     
     msg_bytes = msg.encode()
     key_bytes = key.encode()
-   
-    print("[+] msg : " + str(msg_bytes))
-    print("[+] original key : " + str(key_bytes))
+
+    result = repeating_key_XOR(msg_bytes, key_bytes)
+    print(result)
 
 
-    repeating_key = key_bytes * int(len(msg_bytes) / len(key_bytes))
-    if len(repeating_key) != len(msg_bytes):
-        key_str = key_bytes.decode()
-        repeating_key += key_str[:len(msg_bytes) % len(key_bytes)].encode()
-
-    print("[+] Key : " + str(repeating_key))
-    
-    print("[+] msg_len : " + str(len(msg_bytes)))
-    print("[+] key_len : " + str(len(repeating_key)))
-
-    result_bytes = fixed_bytes_XOR(msg_bytes, repeating_key)
-    print(result_bytes)
 if __name__ == "__main__":
     main()
