@@ -12,11 +12,11 @@ def main():
     msg_bytes = hexlify(msg.encode())
 
     key = "ICE"
-    key_bytes = hexlify(key.encode())
-    # 1. make the len(key_bytes) equal to the len(msg_bytes)
-    repeating_key  = key_bytes * int(len(msg_bytes) / len(key_bytes))
+    key_byte = hexlify(key.encode())
+    # 1. make the len(key_byte) equal to the len(msg_bytes)
+    repeating_key  = key_byte * int(len(msg_bytes) / len(key_byte))
     if len(repeating_key) != len(msg_bytes):
-        repeating_key += key_bytes[:len(msg_bytes) % len(key_bytes)]
+        repeating_key += key_byte[:len(msg_bytes) % len(key_byte)]
 
     print(len(repeating_key))
     print(msg_bytes)
@@ -30,9 +30,9 @@ def main():
     key = "ICE"
     
     msg_bytes = msg.encode()
-    key_bytes = key.encode()
+    key_byte = key.encode()
 
-    result = repeating_key_XOR(msg_bytes, key_bytes)
+    result = repeating_key_XOR(msg_bytes, key_byte)
     print(result)
 
 
