@@ -82,3 +82,18 @@ def single_byte_XOR(msg_bytes, key_byte):
 			key_bytes += key_byte
 		result = fixed_bytes_XOR(msg_bytes, key_bytes)
 		return result
+        
+"""
+{ 1_5.py }
+@ name   : repeating_key_XOR
+@ param  : bytes, byte
+@ return : bytes
+"""
+def repeating_key_XOR(msg_bytes, key_byte):
+    repeating_key = key_byte * int(len(msg_bytes) / len(key_byte))
+    if len(repeating_key) != len(msg_bytes):
+        key_str = key_byte.decode()
+        repeating_key += key_str[:len(msg_bytes) % len(key_byte)].encode()
+
+    result_bytes = fixed_bytes_XOR(msg_bytes, repeating_key)
+    return result_bytes 
