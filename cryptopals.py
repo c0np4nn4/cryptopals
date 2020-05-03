@@ -1,5 +1,6 @@
 import base64
 from binascii import hexlify, unhexlify
+from Crypto.Cipher import AES
 
 """
 { 1_1.py }
@@ -113,3 +114,14 @@ def get_hamming_distance(one_bytes, two_bytes):
                 diff = x ^ y
                 distance += sum([1 for bit in bin(diff) if bit == '1'])
         return distance
+
+"""
+{ 1_7.py }
+@ name   : AES_ECB_decrypt
+@ param  : bytes, bytes
+@ return : bytes
+"""
+def AES_ECB_decrypt(msg_bytes, key_bytes):
+        aes = AES.new(key_bytes, AES.MODE_ECB)
+        result = aes.decrypt(msg_bytes)
+        return result
