@@ -1,15 +1,6 @@
 from binascii import hexlify, unhexlify
 import base64
-from cryptopals import single_byte_XOR, character_scoring, int_to_byte, repeating_key_XOR
-
-def get_hamming_distance(one_bytes, two_bytes):
-	distance = 0
-	for x, y in zip(one_bytes, two_bytes):
-		
-		diff = x ^ y
-		distance += sum([1 for bit in bin(diff) if bit == '1'])
-	return distance
-
+from cryptopals import single_byte_XOR, character_scoring, int_to_byte, repeating_key_XOR, get_hamming_distance
 
 def main():
 	f = open("./6.txt", "r")
@@ -36,20 +27,13 @@ def main():
 
 	
 	key_size = hamming_distances.index(min(hamming_distances))
-	print("KEYSIZE: {}".format(key_size))
 
 	
 	transposed_msg_bytes = [b'' for i in range(key_size)]
-	print(len(transposed_msg_bytes))
 	for offset in range(key_size):
 		for i in range(0, len(msg_bytes), key_size ):
 			index = offset + i 
 			transposed_msg_bytes[offset] += msg_bytes[index:index+1]
-
-
-	for i in range(key_size):
-		print(len(transposed_msg_bytes[i]))
-
 	
 	key = ""
 	
