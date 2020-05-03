@@ -1,73 +1,76 @@
-import base64
 from binascii import hexlify, unhexlify
-from cryptopals import int_to_byte, character_scoring, single_byte_XOR
+import base64
+from cryptopals import single_byte_XOR, character_scoring, int_to_byte, repeating_key_XOR
 
 def get_hamming_distance(one_bytes, two_bytes):
-    #print(one_bytes, two_bytes)
-    distance = int(one_bytes.decode(), 16) ^ int(two_bytes.decode(), 16)
-    #print(bin(distance))
-    score = 0
-    for b in bin(distance):
-        if b == '1':
-            score += 1
-
-    return score 
-
-
+	distance = 0
+	for x, y in zip(one_bytes, two_bytes):
+		
+		diff = x ^ y
+		distance += sum([1 for bit in bin(diff) if bit == '1'])
+	return distance
 
 
 def main():
-    f = open("./6.txt", "r")
-    msg = ""
+	f = open("./6.txt", "r")
+	lines = f.readlines()
+	msg_bytes = base64.b64decode(''.join(lines))
+	m = msg_bytes
+	
 
-    for line in f:
-        msg += (line.strip())
-    msg_hex_bytes = hexlify(base64.b64decode(msg))
-    
-    m = msg_hex_bytes
+	hamming_distances = [65535,65535]	
 
-    hamming_distance = [65536, 65536]
+	for size in range(2, 40):
+		score = 0
+		count = 0
+		for i in range(len(m)//size):
+			chunk = []
+			chunk.append(m[(i+0) * size : (i+1) * size])
+			chunk.append(m[(i+1) * size : (i+2) * size])
+			dist = get_hamming_distance(chunk[0], chunk[1])
+			score += (dist / size)
+			del chunk[1]
+			del chunk[0]
+			count += 1
+		hamming_distances.append(score / count)
 
-    for size in range(2, 40, 2):
-        score = 0
+	
+	key_size = hamming_distances.index(min(hamming_distances))
+	print("KEYSIZE: {}".format(key_size))
 
-        for i in range(5):
-            score += get_hamming_distance(m[i * size : (i + 1) * size], m[(i + 1) * size : (i + 2) * size] ) / size
-        hamming_distance.append(score)
+	
+	transposed_msg_bytes = [b'' for i in range(key_size)]
+	print(len(transposed_msg_bytes))
+	for offset in range(key_size):
+		for i in range(0, len(msg_bytes), key_size ):
+			index = offset + i 
+			transposed_msg_bytes[offset] += msg_bytes[index:index+1]
 
 
+	for i in range(key_size):
+		print(len(transposed_msg_bytes[i]))
 
+	
+	key = ""
+	
+	for index in range(len(transposed_msg_bytes)):
+		score = []
+		results = []
+		t = transposed_msg_bytes
+		for i in range(128):
+			num_bytes = str(i).encode()
+			key_byte = int_to_byte(num_bytes)
+			result = single_byte_XOR(t[index], key_byte)
 
-    msgs = []
-    for _ in range(3):
-        key_size = hamming_distance.index(min(hamming_distance))
-        hamming_distance[key_size] = 65536
-        print(key_size)
+			results.append(result)
+			score.append(character_scoring(result))
+		max_index_num = score.index(max(score))
+		key += chr(max_index_num)
 
-        for i in range(key_size):
-            msg = b''
-            for j in range(int(len(m) / key_size) - 1):
-                msg += m[i + key_size * 2 * j : i + key_size * 2 * j + 1]
-            msgs.append(msg)
+	key_bytes = key.encode()	
 
-    '''
-    -------------------------------------------------------------------------------------------------------------------
-    1, 4, 7, 
-    '''
-
-        for i in range(key_size):
-            scores = []
-            results = []
-            for j in range(0, 127):
-                key_byte = int_to_byte(str(j).encode())
-                result = single_byte_XOR(msgs[i], key_byte)
-                scores.append(character_scoring(result))
-                results.append(result)
-
-            print(unhexlify(results[scores.index(max(scores))]))
-
-        
-
+	result = repeating_key_XOR(msg_bytes, key_bytes)
+	print(unhexlify(result))
 
 if __name__ == "__main__":
-    main()
+	main()
