@@ -97,3 +97,19 @@ def repeating_key_XOR(msg_bytes, key_byte):
 
     result_bytes = fixed_bytes_XOR(msg_bytes, repeating_key)
     return result_bytes 
+
+
+"""
+{ 1_6.py }
+@ name   : get_hamming_distance
+@ param  : bytes, bytes
+@ return : int
+"""
+
+def get_hamming_distance(one_bytes, two_bytes):
+        distance = 0
+        for x, y in zip(one_bytes, two_bytes):
+
+                diff = x ^ y
+                distance += sum([1 for bit in bin(diff) if bit == '1'])
+        return distance
