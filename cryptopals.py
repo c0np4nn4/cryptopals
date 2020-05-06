@@ -125,3 +125,23 @@ def AES_ECB_decrypt(msg_bytes, key_bytes):
         aes = AES.new(key_bytes, AES.MODE_ECB)
         result = aes.decrypt(msg_bytes)
         return result
+
+
+"""
+{ 1_9.py }
+@ name   : PKCS7_padding
+@ param  : bytes, int
+@ return : bytes
+"""
+def PKCS7_padding(msg_bytes, block_size):
+    o_len = len(msg_bytes)
+    pad_count = block_size - (o_len % block_size)
+    pad = hex(pad_count)[2:]
+    if len(pad) < 2:
+        pad = "0" + pad
+    pad = bytes.fromhex(pad)
+    result = msg_bytes
+    print(type(result))
+    for _ in range(pad_count):
+        result += pad
+    return result
