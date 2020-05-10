@@ -117,13 +117,24 @@ def get_hamming_distance(one_bytes, two_bytes):
 
 """
 { 1_7.py }
-@ name   : AES_ECB_decrypt
+@ name   : AES_ECB
 @ param  : bytes, bytes
 @ return : bytes
 """
-def AES_ECB_decrypt(msg_bytes, key_bytes):
+def AES_ECB(msg_bytes, key_bytes):
         aes = AES.new(key_bytes, AES.MODE_ECB)
-        result = aes.decrypt(msg_bytes)
+        print("====================")
+        print("     AES_ECB        ")
+        print(" 1. Encrypt")
+        print(" 2. Decrypt")
+        print("====================")
+        select = input(" Select >> ")
+        if select == "1":
+            result = aes.encrypt(msg_bytes)
+        elif select == "2":
+            result = aes.decrypt(msg_bytes)
+        else:
+            print("wrong")
         return result
 
 
