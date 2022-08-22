@@ -16,21 +16,22 @@ fn test_set1_ch1() {
         res,
         String::from(
             "\
-        SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsa\
-        WtlIGEgcG9pc29ub3VzIG11c2hyb29t"
+            SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsa\
+            WtlIGEgcG9pc29ub3VzIG11c2hyb29t\
+            "
         )
     );
 }
 
 #[test]
 fn test_base64_1_pad() {
-    let data = "abcdefabcd".to_string();
+    let data = "012345a".to_string();
 
     let res = base64_enc(data).unwrap();
 
     println!("res: {:?}", res);
 
-    assert_eq!(res, String::from("q83vq80="));
+    assert_eq!(res, String::from("ASNFCg=="));
 }
 
 #[test]
