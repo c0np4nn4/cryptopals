@@ -10,4 +10,7 @@ mod ch3;
 #[cfg(test)]
 mod ch4;
 
+#[cfg(test)]
+mod ch5;
+
 pub type BoxedError = Box<dyn std::error::Error + Send + Sync>;

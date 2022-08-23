@@ -1,4 +1,4 @@
-use std::{collections::HashMap, env, fs};
+use std::{collections::HashMap, fs};
 
 use crate::single_char_key_attack;
 
