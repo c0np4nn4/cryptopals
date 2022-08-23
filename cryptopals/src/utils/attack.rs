@@ -60,7 +60,7 @@ fn is_space(c: char) -> bool {
     }
 }
 
-pub fn single_char_key_attack(ct: String) -> Result<String, BoxedError> {
+pub fn single_char_key_attack(ct: String) -> Result<(String, f64), BoxedError> {
     let ct: Vec<u8> = hex_string_to_u8_vec(ct.clone())?;
 
     let mut score_table = HashMap::<u8, f64>::new();
@@ -105,7 +105,16 @@ pub fn single_char_key_attack(ct: String) -> Result<String, BoxedError> {
 
     let pt: Vec<u8> = ct.iter().map(|ct_byte| ct_byte ^ key.0).collect();
 
-    let pt: String = String::from_utf8(pt)?;
+    let pt: String = match String::from_utf8(pt) {
+        Ok(pt) => pt,
+        Err(err) => {
+            println!(
+                "Failed to convert u8 to string, from_utf8(), err: {:?}",
+                err
+            );
+            String::default()
+        }
+    };
 
-    Ok(pt)
+    Ok((pt, key.1.to_owned()))
 }

@@ -12,7 +12,7 @@ fn test_single_byte_xor_cipher() {
 
     let res = single_char_key_attack(ct).unwrap();
 
-    println!("[set1/ch3] res: {:?}", res);
+    println!("[set1/ch3] res: {:?}", res.0);
 
-    assert_eq!("Cooking MC's like a pound of bacon", res.as_str());
+    assert_eq!("Cooking MC's like a pound of bacon", res.0.as_str());
 }
