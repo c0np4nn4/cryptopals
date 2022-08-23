@@ -100,21 +100,6 @@ fn padding_2_byte(mut data: Vec<u8>) -> Result<String, BoxedError> {
     Ok(res)
 }
 
-fn trim_leading_zero(data: String) -> Result<String, BoxedError> {
-    let mut idx = 0;
-
-    for n in 0..data.len() {
-        if data[n..=n] != "0".to_owned() {
-            break;
-        }
-        idx += 1;
-    }
-
-    let data = data[idx..].to_owned();
-
-    Ok(data)
-}
-
 pub fn base64_enc(data: String) -> Result<String, BoxedError> {
     let data = hex_string_to_u8_vec(data)?;
 
