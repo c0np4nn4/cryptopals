@@ -4,13 +4,10 @@ use crate::single_char_key_attack;
 
 #[test]
 fn test_detect_single_character_xor() {
-    let ct_candidates = fs::read_to_string(
-        "\
-        ./src/challenge-data/4.txt",
-    )
-    .unwrap()
-    .trim()
-    .to_string();
+    let ct_candidates = fs::read_to_string("./src/challenge-data/4.txt")
+        .unwrap()
+        .trim()
+        .to_string();
 
     let ct_candidates: Vec<String> = ct_candidates.split('\n').map(|ct| ct.to_string()).collect();
 
