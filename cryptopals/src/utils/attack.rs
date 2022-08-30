@@ -1,7 +1,10 @@
-use crate::{hex_string_to_u8_vec, BoxedError};
+use crate::{get_hamming_distance, hex_string_to_u8_vec, BoxedError};
 use lazy_static::lazy_static;
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 
+type PlainText = String;
+type CipherText = String;
+type Score = f64;
 // ref
 // LETTER_FREQ_TABLE
 // : https://pi.math.cornell.edu/~mec/2003-2004/cryptography/subs/frequencies
@@ -60,9 +63,7 @@ fn is_space(c: char) -> bool {
     }
 }
 
-pub fn single_char_key_attack(ct: String) -> Result<(String, f64), BoxedError> {
-    let ct: Vec<u8> = hex_string_to_u8_vec(ct.clone())?;
-
+pub fn single_char_key_attack(ct: Vec<u8>) -> Result<(PlainText, Score), BoxedError> {
     let mut score_table = HashMap::<u8, f64>::new();
 
     // finding key based on the score calculated by the frequency attack
@@ -117,4 +118,55 @@ pub fn single_char_key_attack(ct: String) -> Result<(String, f64), BoxedError> {
     };
 
     Ok((pt, key.1.to_owned()))
+}
+
+pub fn break_arbitrary_size_repeating_key_xor_cipher(
+    min: u64,
+    max: u64,
+    ct: Vec<u8>,
+) -> Result<Vec<u8>, BoxedError> {
+    type KeySize = u64;
+    type Score = f64;
+
+    let mut hamming_distances: HashMap<KeySize, Score> = HashMap::default();
+
+    for key_size in min..=max {
+        let tmp = ct.clone();
+
+        let mut score: f64 = 0.0;
+
+        let range = key_size as usize;
+
+        let key_size_chunks = vec![
+            tmp[range * 0..range * 1].as_ref(),
+            tmp[range * 1..range * 2].as_ref(),
+            tmp[range * 2..range * 3].as_ref(),
+            tmp[range * 3..range * 4].as_ref(),
+            tmp[range * 4..range * 5].as_ref(),
+            tmp[range * 5..range * 6].as_ref(),
+        ];
+
+        score += get_hamming_distance(key_size_chunks[0], key_size_chunks[1])? as f64;
+        // score += get_hamming_distance(chunks[2], chunks[3])? as f64;
+        // score += get_hamming_distance(chunks[4], chunks[5])? as f64;
+
+        hamming_distances.insert(key_size, score / key_size as f64);
+    }
+
+    let key_size = hamming_distances
+        .iter()
+        .min_by(|a, b| {
+            a.1.partial_cmp(&b.1)
+                .ok_or("expect to compare values")
+                .unwrap()
+        })
+        .map(|(k, _v)| k)
+        .ok_or("expect to get key_size(candidate)")?;
+
+    println!("key_size: {:?}", key_size);
+
+    //
+
+    panic!()
+    // Ok(vec![])
 }

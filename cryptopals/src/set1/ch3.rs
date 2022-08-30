@@ -1,4 +1,4 @@
-use crate::single_char_key_attack;
+use crate::{hex_string_to_u8_vec, single_char_key_attack};
 
 #[test]
 fn test_single_byte_xor_cipher() {
@@ -9,6 +9,8 @@ fn test_single_byte_xor_cipher() {
         3736\
         ",
     );
+
+    let ct = hex_string_to_u8_vec(ct).unwrap();
 
     let res = single_char_key_attack(ct).unwrap();
 
