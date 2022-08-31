@@ -1,4 +1,4 @@
-use crate::{hex_string_to_u8_vec, single_char_key_attack};
+use crate::{hex_string_to_u8_vec, single_char_key_attack, SingleCharKeyAttackResult};
 
 #[test]
 fn test_single_byte_xor_cipher() {
@@ -12,9 +12,9 @@ fn test_single_byte_xor_cipher() {
 
     let ct = hex_string_to_u8_vec(ct).unwrap();
 
-    let res = single_char_key_attack(ct).unwrap();
+    let SingleCharKeyAttackResult { pt, .. } = single_char_key_attack(ct).unwrap();
 
-    println!("[set1/ch3] res: {:?}", res.0);
+    println!("[set1/ch3] res: {:?}", pt);
 
-    assert_eq!("Cooking MC's like a pound of bacon", res.0.as_str());
+    assert_eq!("Cooking MC's like a pound of bacon", pt.as_str());
 }

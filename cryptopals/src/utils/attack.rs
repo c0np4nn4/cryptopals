@@ -1,14 +1,23 @@
-use crate::{get_hamming_distance, hex_string_to_u8_vec, BoxedError};
+use crate::{get_hamming_distance, BoxedError};
 use lazy_static::lazy_static;
-use std::collections::{BTreeMap, HashMap};
+use std::{char, collections::HashMap};
 
-type PlainText = String;
-type CipherText = String;
-type Score = f64;
 // ref
 // LETTER_FREQ_TABLE
 // : https://pi.math.cornell.edu/~mec/2003-2004/cryptography/subs/frequencies
 // : https://en.wikipedia.org/wiki/Letter_frequency (' ' == 12.5)
+
+pub struct SingleCharKeyAttackResult {
+    pub key: char,
+    pub pt: String,
+    pub score: f64,
+}
+
+pub struct ArbSizedKeyAttackResult {
+    pub key: String,
+    pub pt: String,
+    // pub score: f64,
+}
 
 lazy_static! {
     pub static ref LETTER_FREQ_TABLE: HashMap<char, f64> = {
@@ -63,7 +72,7 @@ fn is_space(c: char) -> bool {
     }
 }
 
-pub fn single_char_key_attack(ct: Vec<u8>) -> Result<(PlainText, Score), BoxedError> {
+pub fn single_char_key_attack(ct: Vec<u8>) -> Result<SingleCharKeyAttackResult, BoxedError> {
     let mut score_table = HashMap::<u8, f64>::new();
 
     // finding key based on the score calculated by the frequency attack
@@ -96,15 +105,17 @@ pub fn single_char_key_attack(ct: Vec<u8>) -> Result<(PlainText, Score), BoxedEr
         score_table.insert(key_candidate, score);
     }
 
-    let key = score_table
+    let result = score_table
         .iter()
         .max_by(|a, b| a.1.total_cmp(&b.1))
         .map(|(k, v)| (k, v))
         .ok_or("error")?;
 
-    println!("[single_char_key_attack] key: {:?}", key.0.clone() as char);
+    let (key, score) = (result.0.to_owned() as char, result.1.to_owned());
 
-    let pt: Vec<u8> = ct.iter().map(|ct_byte| ct_byte ^ key.0).collect();
+    println!("[single_char_key_attack] key: {:?}", key.clone() as char);
+
+    let pt: Vec<u8> = ct.iter().map(|ct_byte| ct_byte ^ key as u8).collect();
 
     let pt: String = match String::from_utf8(pt) {
         Ok(pt) => pt,
@@ -117,43 +128,38 @@ pub fn single_char_key_attack(ct: Vec<u8>) -> Result<(PlainText, Score), BoxedEr
         }
     };
 
-    Ok((pt, key.1.to_owned()))
+    Ok(SingleCharKeyAttackResult { key, pt, score })
 }
 
 pub fn break_arbitrary_size_repeating_key_xor_cipher(
     min: u64,
     max: u64,
     ct: Vec<u8>,
-) -> Result<Vec<u8>, BoxedError> {
-    type KeySize = u64;
+) -> Result<ArbSizedKeyAttackResult, BoxedError> {
     type Score = f64;
 
-    let mut hamming_distances: HashMap<KeySize, Score> = HashMap::default();
+    let mut hamming_distances: HashMap<_, Score> = HashMap::default();
 
     for key_size in min..=max {
-        let tmp = ct.clone();
+        let ct_clone = ct.clone();
 
         let mut score: f64 = 0.0;
 
-        let range = key_size as usize;
+        let key_size = key_size as usize;
 
-        let key_size_chunks = vec![
-            tmp[range * 0..range * 1].as_ref(),
-            tmp[range * 1..range * 2].as_ref(),
-            tmp[range * 2..range * 3].as_ref(),
-            tmp[range * 3..range * 4].as_ref(),
-            tmp[range * 4..range * 5].as_ref(),
-            tmp[range * 5..range * 6].as_ref(),
-        ];
+        for idx in 0..(ct_clone.len() / key_size) - 1 {
+            score += get_hamming_distance(
+                &ct_clone[(idx + 0) * key_size..(idx + 1) * key_size],
+                &ct_clone[(idx + 1) * key_size..(idx + 2) * key_size],
+            )? as f64;
+        }
 
-        score += get_hamming_distance(key_size_chunks[0], key_size_chunks[1])? as f64;
-        // score += get_hamming_distance(chunks[2], chunks[3])? as f64;
-        // score += get_hamming_distance(chunks[4], chunks[5])? as f64;
+        let score = score / (ct_clone.len() / key_size) as f64 / key_size as f64;
 
-        hamming_distances.insert(key_size, score / key_size as f64);
+        hamming_distances.insert(key_size, score);
     }
 
-    let key_size = hamming_distances
+    let key_size: usize = hamming_distances
         .iter()
         .min_by(|a, b| {
             a.1.partial_cmp(&b.1)
@@ -161,12 +167,49 @@ pub fn break_arbitrary_size_repeating_key_xor_cipher(
                 .unwrap()
         })
         .map(|(k, _v)| k)
-        .ok_or("expect to get key_size(candidate)")?;
+        .ok_or("expect to get key_size(candidate)")?
+        .to_owned();
 
-    println!("key_size: {:?}", key_size);
+    let mut chunks: HashMap<usize, Vec<u8>> = HashMap::<usize, Vec<u8>>::new();
 
-    //
+    for idx in 0..key_size {
+        chunks.insert(idx, vec![]);
+    }
 
-    panic!()
-    // Ok(vec![])
+    for (idx, byte) in ct.iter().enumerate() {
+        let index = &idx.rem_euclid(key_size);
+
+        let chunk = chunks
+            .get_mut(index)
+            .ok_or(format!("expect chunk[{}]", index))?;
+
+        chunk.push(byte.clone());
+    }
+
+    let mut pt_chunks: HashMap<usize, String> = HashMap::<usize, String>::new();
+    let mut rec_key: String = String::default();
+
+    for idx in 0..key_size {
+        let ct = chunks.get(&idx).ok_or("expect to get ciphertext chunk")?;
+
+        let SingleCharKeyAttackResult { pt, key, .. } = single_char_key_attack(ct.clone())?;
+
+        pt_chunks.insert(idx, pt);
+        rec_key.push(key);
+    }
+
+    let mut pt: String = String::default();
+    for idx in 0..ct.len() {
+        let chunk_idx = &idx.rem_euclid(key_size);
+
+        let pt_chunk = pt_chunks
+            .get(chunk_idx)
+            .ok_or("expect to get plaintext chunk")?
+            .as_bytes()
+            .to_vec();
+
+        pt.push(pt_chunk[idx / key_size] as char);
+    }
+
+    Ok(ArbSizedKeyAttackResult { pt, key: rec_key })
 }

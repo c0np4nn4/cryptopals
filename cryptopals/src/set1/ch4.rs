@@ -1,6 +1,6 @@
 use std::{collections::HashMap, fs};
 
-use crate::{hex_string_to_u8_vec, single_char_key_attack};
+use crate::{hex_string_to_u8_vec, single_char_key_attack, SingleCharKeyAttackResult};
 
 #[test]
 fn test_detect_single_character_xor() {
@@ -16,9 +16,9 @@ fn test_detect_single_character_xor() {
     for ct in ct_candidates {
         let ct = hex_string_to_u8_vec(ct).unwrap();
 
-        let (key, score) = single_char_key_attack(ct).unwrap().to_owned();
+        let SingleCharKeyAttackResult { pt, score, .. } = single_char_key_attack(ct).unwrap();
 
-        attack_result.insert(key, score);
+        attack_result.insert(pt, score);
     }
 
     let (pt, _score) = attack_result
