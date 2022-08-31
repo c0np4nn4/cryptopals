@@ -2,4 +2,4 @@
 
 my solutions for cryptopals problems.
 
-written by Rust Language
+written in Rust Language
