@@ -10,11 +10,10 @@ use utils::{
 
 #[test]
 fn test_break_repeating_key_xor() {
-    let ct_candidates: String =
-        fs::read_to_string("./src/challenge-data/6.txt")
-            .unwrap()
-            .split_ascii_whitespace()
-            .collect();
+    let ct_candidates: String = fs::read_to_string("../../data/6.txt")
+        .unwrap()
+        .split_ascii_whitespace()
+        .collect();
 
     let res = base64_dec(ct_candidates).unwrap();
 

@@ -1,4 +1,8 @@
-use std::{collections::HashMap, fs};
+use std::{
+    collections::HashMap,
+    env::{current_dir, current_exe},
+    fs,
+};
 
 use utils::{
     attack::{single_char_key_attack, SingleCharKeyAttackResult},
@@ -7,7 +11,9 @@ use utils::{
 
 #[test]
 fn test_detect_single_character_xor() {
-    let ct_candidates = fs::read_to_string("./src/challenge-data/4.txt")
+    println!("{:?}", current_dir().unwrap());
+
+    let ct_candidates = fs::read_to_string("../../data/4.txt")
         .unwrap()
         .trim()
         .to_string();
