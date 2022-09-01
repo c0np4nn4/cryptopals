@@ -2,7 +2,12 @@ use crate::BoxedError;
 
 pub fn get_hamming_distance(l: &[u8], r: &[u8]) -> Result<u64, BoxedError> {
     if l.len() != r.len() {
-        return Err(format!("length is different, {} and {}", l.len(), r.len()).into());
+        return Err(format!(
+            "length is different, {} and {}",
+            l.len(),
+            r.len()
+        )
+        .into());
     }
 
     let mut res = Vec::<u8>::new();

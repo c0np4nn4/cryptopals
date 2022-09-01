@@ -1,6 +1,6 @@
 use std::fs;
 
-use crate::{aes_decrypt, MOO};
+use utils::crypto::aes::{aes_decrypt, MOO};
 
 #[test]
 fn test_aes_in_ecb_mode() {

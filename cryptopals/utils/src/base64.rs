@@ -1,4 +1,4 @@
-use crate::{hex_string_to_u8_vec, string_to_u8_vec, BoxedError};
+use crate::{casting, BoxedError};
 
 pub struct Base64Table {
     pub table: [char; 64],
@@ -59,8 +59,10 @@ fn padding_0_byte(data: Vec<u8>) -> Result<String, BoxedError> {
 
     for idx in (0..data.len()).step_by(3) {
         base64_chunk[0] = u8_to_u6(data[idx + 0] >> 2);
-        base64_chunk[1] = u8_to_u6((data[idx + 0] << 4) | second_word(data[idx + 1] >> 4));
-        base64_chunk[2] = u8_to_u6((data[idx + 1] << 2) | second_word(data[idx + 2] >> 6));
+        base64_chunk[1] =
+            u8_to_u6((data[idx + 0] << 4) | second_word(data[idx + 1] >> 4));
+        base64_chunk[2] =
+            u8_to_u6((data[idx + 1] << 2) | second_word(data[idx + 2] >> 6));
         base64_chunk[3] = u8_to_u6(data[idx + 2]);
 
         res = format!(
@@ -87,8 +89,10 @@ fn padding_1_byte(mut data: Vec<u8>) -> Result<String, BoxedError> {
 
     for idx in (0..data.len()).step_by(3) {
         base64_chunk[0] = u8_to_u6(data[idx + 0] >> 2);
-        base64_chunk[1] = u8_to_u6((data[idx + 0] << 4) | second_word(data[idx + 1] >> 4));
-        base64_chunk[2] = u8_to_u6((data[idx + 1] << 2) | second_word(data[idx + 2] >> 6));
+        base64_chunk[1] =
+            u8_to_u6((data[idx + 0] << 4) | second_word(data[idx + 1] >> 4));
+        base64_chunk[2] =
+            u8_to_u6((data[idx + 1] << 2) | second_word(data[idx + 2] >> 6));
         base64_chunk[3] = u8_to_u6(data[idx + 2]);
 
         res = format!(
@@ -119,8 +123,10 @@ fn padding_2_byte(mut data: Vec<u8>) -> Result<String, BoxedError> {
 
     for idx in (0..data.len()).step_by(3) {
         base64_chunk[0] = u8_to_u6(data[idx + 0] >> 2);
-        base64_chunk[1] = u8_to_u6((data[idx + 0] << 4) | second_word(data[idx + 1] >> 4));
-        base64_chunk[2] = u8_to_u6((data[idx + 1] << 2) | second_word(data[idx + 2] >> 6));
+        base64_chunk[1] =
+            u8_to_u6((data[idx + 0] << 4) | second_word(data[idx + 1] >> 4));
+        base64_chunk[2] =
+            u8_to_u6((data[idx + 1] << 2) | second_word(data[idx + 2] >> 6));
         base64_chunk[3] = u8_to_u6(data[idx + 2]);
 
         res = format!(
@@ -142,7 +148,7 @@ fn padding_2_byte(mut data: Vec<u8>) -> Result<String, BoxedError> {
 }
 
 pub fn base64_enc(data: String) -> Result<String, BoxedError> {
-    let data = hex_string_to_u8_vec(data)?;
+    let data = casting::hex_string_to_u8_vec(data)?;
 
     let res = match data.len() % 3 {
         0 => padding_0_byte(data)?,
@@ -162,7 +168,7 @@ pub fn base64_enc(data: String) -> Result<String, BoxedError> {
 pub fn base64_dec(data: String) -> Result<Vec<u8>, BoxedError> {
     let base64_table = Base64Table::new();
 
-    let data: Vec<u8> = string_to_u8_vec(data)?;
+    let data: Vec<u8> = casting::string_to_u8_vec(data)?;
 
     let mut data_decrypted: Vec<u8> = Vec::new();
 

@@ -1,0 +1,10 @@
+[package]
+name = "challenges"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+utils = { path = "../utils" }
+
+[lib]
+doctest = false

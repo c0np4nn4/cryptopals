@@ -1,12 +1,17 @@
-use crate::{hex_string_to_u8_vec, string_to_u8_vec, u8_vec_to_hex_string, BoxedError};
+use crate::{casting, BoxedError};
 
 pub fn fixed_xor(l: String, r: String) -> Result<String, BoxedError> {
-    let l = hex_string_to_u8_vec(l)?;
+    let l = casting::hex_string_to_u8_vec(l)?;
 
-    let r = hex_string_to_u8_vec(r)?;
+    let r = casting::hex_string_to_u8_vec(r)?;
 
     if l.len() != r.len() {
-        return Err(format!("length is different, {} and {}", l.len(), r.len()).into());
+        return Err(format!(
+            "length is different, {} and {}",
+            l.len(),
+            r.len()
+        )
+        .into());
     }
 
     let mut res = Vec::<u8>::new();
@@ -18,10 +23,13 @@ pub fn fixed_xor(l: String, r: String) -> Result<String, BoxedError> {
     Ok(String::from_utf8(res)?)
 }
 
-pub fn repeating_key_xor(pt: String, key: String) -> Result<String, BoxedError> {
-    let pt = string_to_u8_vec(pt)?;
+pub fn repeating_key_xor(
+    pt: String,
+    key: String,
+) -> Result<String, BoxedError> {
+    let pt = casting::string_to_u8_vec(pt)?;
 
-    let key = string_to_u8_vec(key)?;
+    let key = casting::string_to_u8_vec(key)?;
 
     let mut expanded_key = Vec::<u8>::new();
 
@@ -35,7 +43,7 @@ pub fn repeating_key_xor(pt: String, key: String) -> Result<String, BoxedError> 
         .map(|(l, r)| l ^ r)
         .collect();
 
-    let res: String = u8_vec_to_hex_string(res)?;
+    let res: String = casting::u8_vec_to_hex_string(res)?;
 
     Ok(res)
 }

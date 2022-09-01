@@ -1,0 +1,8 @@
+[workspace]
+
+members = [ #
+  "cryptopals/challenges",
+  "cryptopals/utils",
+  # "cryptopals",
+
+]

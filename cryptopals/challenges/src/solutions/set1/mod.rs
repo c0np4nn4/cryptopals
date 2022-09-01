@@ -18,5 +18,3 @@ mod ch6;
 
 #[cfg(test)]
 mod ch7;
-
-pub type BoxedError = Box<dyn std::error::Error + Send + Sync>;

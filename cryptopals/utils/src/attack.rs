@@ -1,6 +1,8 @@
-use crate::{get_hamming_distance, BoxedError};
 use lazy_static::lazy_static;
 use std::{char, collections::HashMap};
+
+use crate::ham_dist;
+use crate::BoxedError;
 
 // ref
 // LETTER_FREQ_TABLE
@@ -72,7 +74,9 @@ fn is_space(c: char) -> bool {
     }
 }
 
-pub fn single_char_key_attack(ct: Vec<u8>) -> Result<SingleCharKeyAttackResult, BoxedError> {
+pub fn single_char_key_attack(
+    ct: Vec<u8>,
+) -> Result<SingleCharKeyAttackResult, BoxedError> {
     let mut score_table = HashMap::<u8, f64>::new();
 
     // finding key based on the score calculated by the frequency attack
@@ -148,13 +152,14 @@ pub fn break_arbitrary_size_repeating_key_xor_cipher(
         let key_size = key_size as usize;
 
         for idx in 0..(ct_clone.len() / key_size) - 1 {
-            score += get_hamming_distance(
+            score += ham_dist::get_hamming_distance(
                 &ct_clone[(idx + 0) * key_size..(idx + 1) * key_size],
                 &ct_clone[(idx + 1) * key_size..(idx + 2) * key_size],
             )? as f64;
         }
 
-        let score = score / (ct_clone.len() / key_size) as f64 / key_size as f64;
+        let score =
+            score / (ct_clone.len() / key_size) as f64 / key_size as f64;
 
         hamming_distances.insert(key_size, score);
     }
@@ -192,7 +197,8 @@ pub fn break_arbitrary_size_repeating_key_xor_cipher(
     for idx in 0..key_size {
         let ct = chunks.get(&idx).ok_or("expect to get ciphertext chunk")?;
 
-        let SingleCharKeyAttackResult { pt, key, .. } = single_char_key_attack(ct.clone())?;
+        let SingleCharKeyAttackResult { pt, key, .. } =
+            single_char_key_attack(ct.clone())?;
 
         pt_chunks.insert(idx, pt);
         rec_key.push(key);

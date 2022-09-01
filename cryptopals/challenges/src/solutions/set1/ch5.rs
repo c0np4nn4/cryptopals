@@ -1,4 +1,4 @@
-use crate::repeating_key_xor;
+use utils::xor::repeating_key_xor;
 
 #[test]
 fn test_repeating_key_xor() {

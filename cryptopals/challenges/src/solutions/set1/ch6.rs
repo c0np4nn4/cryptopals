@@ -1,16 +1,20 @@
 use std::fs;
 
-use crate::{
-    base64_dec, break_arbitrary_size_repeating_key_xor_cipher, get_hamming_distance,
-    ArbSizedKeyAttackResult,
+use utils::{
+    attack::{
+        break_arbitrary_size_repeating_key_xor_cipher, ArbSizedKeyAttackResult,
+    },
+    base64::base64_dec,
+    ham_dist::get_hamming_distance,
 };
 
 #[test]
 fn test_break_repeating_key_xor() {
-    let ct_candidates: String = fs::read_to_string("./src/challenge-data/6.txt")
-        .unwrap()
-        .split_ascii_whitespace()
-        .collect();
+    let ct_candidates: String =
+        fs::read_to_string("./src/challenge-data/6.txt")
+            .unwrap()
+            .split_ascii_whitespace()
+            .collect();
 
     let res = base64_dec(ct_candidates).unwrap();
 

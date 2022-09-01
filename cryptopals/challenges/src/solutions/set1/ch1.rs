@@ -1,4 +1,4 @@
-use crate::base64_enc;
+use utils::base64;
 
 #[test]
 fn test_base64_enc() {
@@ -8,7 +8,7 @@ fn test_base64_enc() {
         736f6e6f7573206d757368726f6f6d"
         .to_string();
 
-    let res = base64_enc(data).unwrap();
+    let res = base64::base64_enc(data).unwrap();
 
     println!("[set1/ch1] res: {:?}", res);
 
@@ -27,7 +27,7 @@ fn test_base64_enc() {
 fn test_base64_1_pad() {
     let data = "012345a".to_string();
 
-    let res = base64_enc(data).unwrap();
+    let res = base64::base64_enc(data).unwrap();
 
     println!("[set1/ch1, 1] res: {:?}", res);
 
@@ -38,7 +38,7 @@ fn test_base64_1_pad() {
 fn test_base64_2_pad() {
     let data = "abcdefab".to_string();
 
-    let res = base64_enc(data).unwrap();
+    let res = base64::base64_enc(data).unwrap();
 
     println!("[set1/ch1, 2] res: {:?}", res);
 

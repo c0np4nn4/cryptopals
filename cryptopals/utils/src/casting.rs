@@ -31,7 +31,8 @@ pub fn string_to_u8_vec(data: String) -> Result<Vec<u8>, BoxedError> {
         return Err(format!("data should be exist").into());
     }
 
-    let res: Vec<u8> = data.chars().into_iter().map(|byte| byte as u8).collect();
+    let res: Vec<u8> =
+        data.chars().into_iter().map(|byte| byte as u8).collect();
 
     Ok(res)
 }
