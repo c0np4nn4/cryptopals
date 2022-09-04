@@ -1,8 +1,8 @@
 pub mod attack;
 pub mod base64;
-pub mod casting;
 pub mod crypto;
-pub mod ham_dist;
+pub mod hamming_distance;
+pub mod types;
 pub mod xor;
 
-pub type BoxedError = Box<dyn std::error::Error + Send + Sync>;
+pub type BoxedError = Box<dyn std::error::Error>;

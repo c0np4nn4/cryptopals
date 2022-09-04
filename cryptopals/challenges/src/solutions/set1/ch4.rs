@@ -1,16 +1,12 @@
-use std::{
-    collections::HashMap,
-    env::{current_dir, current_exe},
-    fs,
-};
+use std::{collections::HashMap, env::current_dir, fs};
 
 use utils::{
     attack::{single_char_key_attack, SingleCharKeyAttackResult},
-    casting::hex_string_to_u8_vec,
+    types,
 };
 
 #[test]
-fn test_detect_single_character_xor() {
+fn chal_4() {
     println!("{:?}", current_dir().unwrap());
 
     let ct_candidates = fs::read_to_string("../../data/4.txt")
@@ -24,7 +20,7 @@ fn test_detect_single_character_xor() {
     let mut attack_result = HashMap::<String, f64>::new();
 
     for ct in ct_candidates {
-        let ct = hex_string_to_u8_vec(ct).unwrap();
+        let ct = types::hex_string_to_u8_vec(ct).unwrap();
 
         let SingleCharKeyAttackResult { pt, score, .. } =
             single_char_key_attack(ct).unwrap();

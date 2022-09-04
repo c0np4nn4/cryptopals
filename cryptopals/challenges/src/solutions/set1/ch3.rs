@@ -1,10 +1,10 @@
 use utils::{
     attack::{single_char_key_attack, SingleCharKeyAttackResult},
-    casting::hex_string_to_u8_vec,
+    types::hex_string_to_u8_vec,
 };
 
 #[test]
-fn test_single_byte_xor_cipher() {
+fn chal_3() {
     let ct: String = String::from(
         "\
         1b37373331363f78151b7f2b78343133\

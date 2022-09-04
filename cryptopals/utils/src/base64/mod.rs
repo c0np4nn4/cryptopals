@@ -1,4 +1,7 @@
-use crate::{casting, BoxedError};
+#[cfg(test)]
+mod test;
+
+use crate::{types, BoxedError};
 
 pub struct Base64Table {
     pub table: [char; 64],
@@ -148,7 +151,7 @@ fn padding_2_byte(mut data: Vec<u8>) -> Result<String, BoxedError> {
 }
 
 pub fn base64_enc(data: String) -> Result<String, BoxedError> {
-    let data = casting::hex_string_to_u8_vec(data)?;
+    let data = types::hex_string_to_u8_vec(data)?;
 
     let res = match data.len() % 3 {
         0 => padding_0_byte(data)?,
@@ -168,7 +171,7 @@ pub fn base64_enc(data: String) -> Result<String, BoxedError> {
 pub fn base64_dec(data: String) -> Result<Vec<u8>, BoxedError> {
     let base64_table = Base64Table::new();
 
-    let data: Vec<u8> = casting::string_to_u8_vec(data)?;
+    let data: Vec<u8> = types::string_to_u8_vec(data)?;
 
     let mut data_decrypted: Vec<u8> = Vec::new();
 

@@ -1,3 +1,6 @@
+#[cfg(test)]
+mod test;
+
 use crate::BoxedError;
 
 pub fn get_hamming_distance(l: &[u8], r: &[u8]) -> Result<u64, BoxedError> {

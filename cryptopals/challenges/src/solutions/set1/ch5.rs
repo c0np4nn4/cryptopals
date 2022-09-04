@@ -1,7 +1,7 @@
 use utils::xor::repeating_key_xor;
 
 #[test]
-fn test_repeating_key_xor() {
+fn chal_5() {
     //
     let pt = "Burning 'em, if you ain't quick and nimble
 I go crazy when I hear a cymbal"

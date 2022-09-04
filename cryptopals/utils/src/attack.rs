@@ -1,8 +1,7 @@
 use lazy_static::lazy_static;
 use std::{char, collections::HashMap};
 
-use crate::ham_dist;
-use crate::BoxedError;
+use crate::{hamming_distance::get_hamming_distance, BoxedError};
 
 // ref
 // LETTER_FREQ_TABLE
@@ -152,7 +151,7 @@ pub fn break_arbitrary_size_repeating_key_xor_cipher(
         let key_size = key_size as usize;
 
         for idx in 0..(ct_clone.len() / key_size) - 1 {
-            score += ham_dist::get_hamming_distance(
+            score += get_hamming_distance(
                 &ct_clone[(idx + 0) * key_size..(idx + 1) * key_size],
                 &ct_clone[(idx + 1) * key_size..(idx + 2) * key_size],
             )? as f64;

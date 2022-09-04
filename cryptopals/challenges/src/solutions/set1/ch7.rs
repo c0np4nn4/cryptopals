@@ -1,20 +1,29 @@
 use std::fs;
 
-use utils::crypto::aes::{aes_decrypt, MOO};
+use utils::{
+    crypto::{mode::Mode, AES},
+    types,
+};
 
 #[test]
-fn test_aes_in_ecb_mode() {
-    let ct: String = fs::read_to_string("./src/challenge-data/7.txt")
+fn chal_7() {
+    let ct: String = fs::read_to_string("../../data/7.txt")
         .unwrap()
         .split_ascii_whitespace()
         .collect();
 
     let key: String = "YELLOW SUBMARINE".to_string();
 
-    let res =
-        aes_decrypt(ct.as_bytes().to_vec(), key.as_bytes().to_vec(), MOO::ECB)
-            .unwrap();
+    // let res =
+    // aes_decrypt(ct.as_bytes().to_vec(), key.as_bytes().to_vec(), MOO::ECB)
+    //     .unwrap();
 
-    println!("res: {:?}", res);
-    panic!()
+    // let aes = AES::new(ct.as_bytes().to_vec(), None, Mode::ECB);
+
+    // let res = aes.decrypt(key.as_bytes().try_into().unwrap());
+
+    // println!("res: {:?}", String::from_utf8(res));
+
+    // println!("res: {:?}", res);
+    // panic!()
 }
