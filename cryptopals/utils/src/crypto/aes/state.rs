@@ -13,7 +13,7 @@ impl State {
         State { state }
     }
 
-    pub fn get_rows(&self) -> Vec<Vec<u8>> {
+    pub fn get_columns(&self) -> Vec<Vec<u8>> {
         let mut res = vec![];
 
         for idx in 0..4 {
@@ -30,17 +30,26 @@ impl State {
         res
     }
 
-    pub fn from_vec(mut state: Vec<u8>) -> Result<State, BoxedError> {
-        // padding, for test
-        while state.len() < 16 {
-            state.push(0);
-        }
+    // pub fn get_rows(&self) -> Vec<[u8; 4]> {
+    //     let mut res = Vec::<[u8; 4]>::new();
 
-        // trim, for test
-        while state.len() > 16 {
-            state.pop();
-        }
+    //     let mut tmp = [0u8; 4];
 
+    //     for idx in 0..4 {
+    //         tmp[0] = self.state[0x0 + idx];
+    //         tmp[1] = self.state[0x4 + idx];
+    //         tmp[2] = self.state[0x8 + idx];
+    //         tmp[3] = self.state[0xc + idx];
+
+    //         res.push(tmp);
+    //     }
+
+    //     println!("[!!] rows: {:#?}", res);
+
+    //     res
+    // }
+
+    pub fn from_vec(state: Vec<u8>) -> Result<State, BoxedError> {
         let mut res: [u8; 16] = [0; 16];
 
         for idx in 0..16 {

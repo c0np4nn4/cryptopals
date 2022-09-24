@@ -1,4 +1,4 @@
-use super::{state::State, AES};
+use super::AES;
 
 impl AES {
     // fn inv_sub_bytes(&self, prev_state: State) -> State {
