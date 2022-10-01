@@ -5,7 +5,6 @@ use aes::cipher::BlockDecrypt;
 use aes::cipher::{generic_array::GenericArray, KeyInit};
 use aes::Aes128;
 use utils::base64::base64_dec;
-use utils::types::u8_vec_to_hex_string;
 // use utils::crypto;
 
 #[test]
