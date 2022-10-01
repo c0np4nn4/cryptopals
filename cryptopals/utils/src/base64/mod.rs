@@ -171,7 +171,8 @@ pub fn base64_enc(data: String) -> Result<String, BoxedError> {
 pub fn base64_dec(data: String) -> Result<Vec<u8>, BoxedError> {
     let base64_table = Base64Table::new();
 
-    let data: Vec<u8> = types::string_to_u8_vec(data)?;
+    // let data: Vec<u8> = types::string_to_u8_vec(data)?;
+    let data: Vec<u8> = data.as_bytes().to_vec();
 
     let mut data_decrypted: Vec<u8> = Vec::new();
 

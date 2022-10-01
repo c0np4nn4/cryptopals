@@ -1,3 +1,3 @@
-pub enum Mode {
-    ECB,
-}
+// pub enum Mode {
+//     ECB,
+// }

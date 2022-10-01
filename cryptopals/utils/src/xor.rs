@@ -37,9 +37,11 @@ pub fn repeating_key_xor(
     pt: String,
     key: String,
 ) -> Result<String, BoxedError> {
-    let pt = types::string_to_u8_vec(pt)?;
+    // let pt = types::string_to_u8_vec(pt)?;
+    let pt = pt.as_bytes();
 
-    let key = types::string_to_u8_vec(key)?;
+    // let key = types::string_to_u8_vec(key)?;
+    let key = key.as_bytes();
 
     let mut expanded_key = Vec::<u8>::new();
 

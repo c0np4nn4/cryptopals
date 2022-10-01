@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 utils = { path = "../utils" }
+aes = "0.8.1"
 
 [lib]
 doctest = false
