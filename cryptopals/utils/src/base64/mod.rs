@@ -151,7 +151,7 @@ fn padding_2_byte(mut data: Vec<u8>) -> Result<String, BoxedError> {
 }
 
 pub fn base64_enc(data: String) -> Result<String, BoxedError> {
-    let data = types::hex_string_to_u8_vec(data)?;
+    let data = types::decode_hex(data)?;
 
     let res = match data.len() % 3 {
         0 => padding_0_byte(data)?,

@@ -1,4 +1,4 @@
-use utils::{types::hex_string_to_u8_vec, xor};
+use utils::{types::decode_hex, xor};
 
 #[test]
 fn chal_2() {
@@ -10,9 +10,9 @@ fn chal_2() {
         686974207468652062756c6c277320657965"
         .to_string();
 
-    let l = hex_string_to_u8_vec(left_data).unwrap();
+    let l = decode_hex(left_data).unwrap();
 
-    let r = hex_string_to_u8_vec(right_data).unwrap();
+    let r = decode_hex(right_data).unwrap();
 
     let res = xor::fixed_xor(l, r).unwrap();
 
@@ -20,9 +20,6 @@ fn chal_2() {
 
     assert_eq!(
         res,
-        hex_string_to_u8_vec(
-            "746865206b696420646f6e277420706c6179".to_string()
-        )
-        .unwrap()
+        decode_hex("746865206b696420646f6e277420706c6179".to_string()).unwrap()
     );
 }

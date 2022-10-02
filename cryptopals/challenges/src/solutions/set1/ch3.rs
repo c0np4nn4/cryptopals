@@ -1,6 +1,6 @@
 use utils::{
     attack::{single_char_key_attack, SingleCharKeyAttackResult},
-    types::hex_string_to_u8_vec,
+    types::decode_hex,
 };
 
 #[test]
@@ -13,7 +13,7 @@ fn chal_3() {
         ",
     );
 
-    let ct = hex_string_to_u8_vec(ct).unwrap();
+    let ct = decode_hex(ct).unwrap();
 
     let SingleCharKeyAttackResult { pt, .. } =
         single_char_key_attack(ct).unwrap();

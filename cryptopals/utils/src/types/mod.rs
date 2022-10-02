@@ -1,6 +1,6 @@
 use crate::BoxedError;
 
-pub fn hex_string_to_u8_vec(mut data: String) -> Result<Vec<u8>, BoxedError> {
+pub fn decode_hex(mut data: String) -> Result<Vec<u8>, BoxedError> {
     if data.is_empty() {
         return Err(format!("data should be exist").into());
     }

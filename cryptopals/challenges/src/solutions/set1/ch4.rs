@@ -2,7 +2,7 @@ use std::{collections::HashMap, env::current_dir, fs};
 
 use utils::{
     attack::{single_char_key_attack, SingleCharKeyAttackResult},
-    types,
+    types::decode_hex,
 };
 
 #[test]
@@ -20,7 +20,7 @@ fn chal_4() {
     let mut attack_result = HashMap::<String, f64>::new();
 
     for ct in ct_candidates {
-        let ct = types::hex_string_to_u8_vec(ct).unwrap();
+        let ct = decode_hex(ct).unwrap();
 
         let SingleCharKeyAttackResult { pt, score, .. } =
             single_char_key_attack(ct).unwrap();
