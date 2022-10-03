@@ -1,0 +1,22 @@
+#!/usr/bin/bash
+
+set -e
+
+if [ -z $1 ]
+then 
+  echo "cryptpl: missing challenge number"
+  echo "Try 'cryptpl help'"
+  exit 0
+fi
+
+if [ $1 == "help" ]
+then
+  echo "Usage: cryptpl [challenge number]"
+  echo "ex) cryptpl chal_1"
+  exit 0
+fi
+
+challenge=$1
+
+
+cargo test $challenge -- --nocapture

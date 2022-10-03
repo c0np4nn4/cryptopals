@@ -26,8 +26,7 @@ pub fn get_random_readable_data(len: u32) -> Vec<u8> {
 
     data
 }
-
-pub fn generate_random_16_bytes() -> [u8; 16] {
+fn generate_random_16_bytes() -> [u8; 16] {
     let res: [u8; 16] = {
         let mut res: Vec<u8> = Vec::new();
         for _ in 0..16 {
@@ -38,6 +37,14 @@ pub fn generate_random_16_bytes() -> [u8; 16] {
     };
 
     res
+}
+
+pub fn get_random_aes_key() -> [u8; 16] {
+    generate_random_16_bytes()
+}
+
+pub fn get_random_aes_iv() -> [u8; 16] {
+    generate_random_16_bytes()
 }
 
 // script: `I Have a Dream` - Martin Luther King, Jr.

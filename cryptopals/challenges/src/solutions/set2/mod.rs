@@ -6,3 +6,6 @@ mod ch10;
 
 #[cfg(test)]
 mod ch11;
+
+#[cfg(test)]
+mod ch12;
