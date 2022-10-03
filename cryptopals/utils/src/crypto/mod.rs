@@ -1,3 +1,2 @@
-mod aes;
-
-pub use aes::*;
+pub mod aes;
+mod aes_impl;

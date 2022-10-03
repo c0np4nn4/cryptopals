@@ -26,17 +26,6 @@ pub fn decode_hex(mut data: String) -> Result<Vec<u8>, BoxedError> {
     Ok(res)
 }
 
-// pub fn string_to_u8_vec(data: String) -> Result<Vec<u8>, BoxedError> {
-//     if data.is_empty() {
-//         return Err(format!("data should be exist").into());
-//     }
-
-//     let res: Vec<u8> =
-//         data.chars().into_iter().map(|byte| byte as u8).collect();
-
-//     Ok(res)
-// }
-
 pub fn u8_vec_to_hex_string(data: Vec<u8>) -> Result<String, BoxedError> {
     if data.is_empty() {
         return Err(format!("data should be exist").into());

@@ -1,19 +1,11 @@
-use std::convert::TryInto;
 use std::fs;
 
-use aes::cipher::BlockDecrypt;
-use aes::cipher::{generic_array::GenericArray, KeyInit};
-use aes::Aes128;
 use utils::base64::base64_dec;
-// use utils::crypto;
+use utils::crypto::aes;
 
 #[test]
 fn chal_7() {
-    let key_str = String::from("YELLOW SUBMARINE");
-
-    let key = GenericArray::from_slice(key_str.as_bytes());
-
-    let cipher = Aes128::new(&key);
+    let key = String::from("YELLOW SUBMARINE");
 
     let data: String = fs::read_to_string("../../data/7.txt")
         .unwrap()
@@ -22,19 +14,7 @@ fn chal_7() {
 
     let data = base64_dec(data).unwrap();
 
-    let mut res = Vec::new();
-
-    for idx in (0..data.len()).step_by(16) {
-        let block: [u8; 16] = data[idx..idx + 16].try_into().unwrap();
-
-        let mut block = GenericArray::from_slice(&block).clone();
-        println!("\nblock: {:02x?}", block);
-
-        cipher.decrypt_block(&mut block);
-        println!("block: {:02x?}", block);
-
-        res.append(&mut block.to_vec());
-    }
+    let res = aes::decrypt_ecb(key.as_bytes().to_vec(), data);
 
     let res: String = res.into_iter().map(|byte| byte as char).collect();
 

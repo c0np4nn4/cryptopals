@@ -1,195 +1,135 @@
-mod decrypt;
-mod encrypt;
-mod key;
-pub mod mode;
-pub mod state;
-mod types;
+mod cbc;
+mod ecb;
 
-#[cfg(test)]
-mod test;
+pub use cbc::*;
+pub use ecb::*;
+use rand::Rng;
 
-// use crate::{crypto::aes::types::RoundKey, xor::fixed_xor, BoxedError};
+const BLOCK_SIZE: usize = 16;
 
-// use self::{
-//     mode::Mode,
-//     state::from_vec,
-//     types::{Block, State},
-// };
+pub fn get_random_data(len: u32) -> Vec<u8> {
+    let mut data: Vec<u8> = Vec::new();
 
-// pub const SUB_BYTES_TABLE: [u8; 256] = [
-//     0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b,
-//     0xfe, 0xd7, 0xab, 0x76, 0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0,
-//     0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0, 0xb7, 0xfd, 0x93, 0x26,
-//     0x36, 0x3f, 0xf7, 0xcc, 0x34, 0xa5, 0xe5, 0xf1, 0x71, 0xd8, 0x31, 0x15,
-//     0x04, 0xc7, 0x23, 0xc3, 0x18, 0x96, 0x05, 0x9a, 0x07, 0x12, 0x80, 0xe2,
-//     0xeb, 0x27, 0xb2, 0x75, 0x09, 0x83, 0x2c, 0x1a, 0x1b, 0x6e, 0x5a, 0xa0,
-//     0x52, 0x3b, 0xd6, 0xb3, 0x29, 0xe3, 0x2f, 0x84, 0x53, 0xd1, 0x00, 0xed,
-//     0x20, 0xfc, 0xb1, 0x5b, 0x6a, 0xcb, 0xbe, 0x39, 0x4a, 0x4c, 0x58, 0xcf,
-//     0xd0, 0xef, 0xaa, 0xfb, 0x43, 0x4d, 0x33, 0x85, 0x45, 0xf9, 0x02, 0x7f,
-//     0x50, 0x3c, 0x9f, 0xa8, 0x51, 0xa3, 0x40, 0x8f, 0x92, 0x9d, 0x38, 0xf5,
-//     0xbc, 0xb6, 0xda, 0x21, 0x10, 0xff, 0xf3, 0xd2, 0xcd, 0x0c, 0x13, 0xec,
-//     0x5f, 0x97, 0x44, 0x17, 0xc4, 0xa7, 0x7e, 0x3d, 0x64, 0x5d, 0x19, 0x73,
-//     0x60, 0x81, 0x4f, 0xdc, 0x22, 0x2a, 0x90, 0x88, 0x46, 0xee, 0xb8, 0x14,
-//     0xde, 0x5e, 0x0b, 0xdb, 0xe0, 0x32, 0x3a, 0x0a, 0x49, 0x06, 0x24, 0x5c,
-//     0xc2, 0xd3, 0xac, 0x62, 0x91, 0x95, 0xe4, 0x79, 0xe7, 0xc8, 0x37, 0x6d,
-//     0x8d, 0xd5, 0x4e, 0xa9, 0x6c, 0x56, 0xf4, 0xea, 0x65, 0x7a, 0xae, 0x08,
-//     0xba, 0x78, 0x25, 0x2e, 0x1c, 0xa6, 0xb4, 0xc6, 0xe8, 0xdd, 0x74, 0x1f,
-//     0x4b, 0xbd, 0x8b, 0x8a, 0x70, 0x3e, 0xb5, 0x66, 0x48, 0x03, 0xf6, 0x0e,
-//     0x61, 0x35, 0x57, 0xb9, 0x86, 0xc1, 0x1d, 0x9e, 0xe1, 0xf8, 0x98, 0x11,
-//     0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28, 0xdf,
-//     0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f,
-//     0xb0, 0x54, 0xbb, 0x16,
-// ];
+    for _ in 0..len {
+        data.push(rand::random());
+    }
 
-// pub struct AES {
-//     pub iv: Option<State>,
-//     pub mode: Mode,
-//     pub key: [u8; 16],
-// }
+    data
+}
 
-// impl AES {
-//     pub fn new(iv: Option<State>, key: [u8; 16], mode: Mode) -> AES {
-//         AES { iv, key, mode }
-//     }
+pub fn get_random_readable_data(len: u32) -> Vec<u8> {
+    let mut data: Vec<u8> = Vec::new();
 
-//     fn add_round_key(
-//         &self,
-//         prev_state: State,
-//         round_key: State,
-//     ) -> Result<State, BoxedError> {
-//         let next_state = fixed_xor(prev_state.to_vec(), round_key.to_vec())?;
+    for _ in 0..len {
+        data.push(rand::thread_rng().gen_range(33..=125));
+    }
 
-//         Ok(from_vec(next_state)?)
-//     }
+    data
+}
 
-//     pub fn encrypt(&self, data: Vec<u8>) -> Result<Vec<u8>, BoxedError> {
-//         let mut res: Vec<u8> = vec![];
+pub fn generate_random_16_bytes() -> [u8; 16] {
+    let res: [u8; 16] = {
+        let mut res: Vec<u8> = Vec::new();
+        for _ in 0..16 {
+            res.push(rand::random());
+        }
 
-//         // 0. padding
-//         let data = padding(data);
+        res.try_into().unwrap()
+    };
 
-//         println!("data len: {:?}", data.len());
-//         println!("data    : {:?}", data);
+    res
+}
 
-//         // 1. divide data into blocks
-//         let mut blocks: Vec<Block> = Vec::<Block>::new();
+// script: `I Have a Dream` - Martin Luther King, Jr.
+// https://www.americanrhetoric.com/speeches/mlkihaveadream.htm
+pub fn get_data() -> Vec<u8> {
+    r#"
+I am happy to join with you today in what will go down in history as the greatest demonstration for freedom in the history of our nation.
 
-//         {
-//             let mut block = Vec::<u8>::new();
+Five score years ago, a great American, in whose symbolic shadow we stand today, signed the Emancipation Proclamation. This momentous decree came as a great beacon light of hope to millions of Negro slaves who had been seared in the flames of withering injustice. It came as a joyous daybreak to end the long night of their captivity.
 
-//             for byte in data {
-//                 if block.len() == 16 {
-//                     blocks.push(from_vec(block.clone())?);
+But one hundred years later, the Negro still is not free. One hundred years later, the life of the Negro is still sadly crippled by the manacles of segregation and the chains of discrimination. One hundred years later, the Negro lives on a lonely island of poverty in the midst of a vast ocean of material prosperity. One hundred years later, the Negro is still languished in the corners of American society and finds himself an exile in his own land. And so we've come here today to dramatize a shameful condition.
 
-//                     block.clear();
-//                 } else {
-//                     block.push(byte);
-//                 }
-//             }
+In a sense we've come to our nation's capital to cash a check. When the architects of our republic wrote the magnificent words of the Constitution and the Declaration of Independence, they were signing a promissory note to which every American was to fall heir. This note was a promise that all men, yes, black men as well as white men, would be guaranteed the "unalienable Rights" of "Life, Liberty and the pursuit of Happiness." It is obvious today that America has defaulted on this promissory note, insofar as her citizens of color are concerned. Instead of honoring this sacred obligation, America has given the Negro people a bad check, a check which has come back marked 'insufficient funds.'
 
-//             blocks.push(from_vec(block.clone())?);
-//         };
+But we refuse to believe that the bank of justice is bankrupt. We refuse to believe that there are insufficient funds in the great vaults of opportunity of this nation. And so, we've come to cash this check, a check that will give us upon demand the riches of freedom and the security of justice.
 
-//         println!("[blocks]: {:?}", blocks);
+We have also come to this hallowed spot to remind America of the fierce urgency of Now. This is no time to engage in the luxury of cooling off or to take the tranquilizing drug of gradualism. Now is the time to make real the promises of democracy. Now is the time to rise from the dark and desolate valley of segregation to the sunlit path of racial justice. Now is the time to lift our nation from the quicksands of racial injustice to the solid rock of brotherhood. Now is the time to make justice a reality for all of God's children.
 
-//         // 2. get extended key
-//         let ext_key: [RoundKey; 11] = self.key_expansion()?;
+It would be fatal for the nation to overlook the urgency of the moment. This sweltering summer of the Negro's legitimate discontent will not pass until there is an invigorating autumn of freedom and equality. Nineteen sixty-three is not an end, but a beginning. And those who hope that the Negro needed to blow off steam and will now be content will have a rude awakening if the nation returns to business as usual. And there will be neither rest nor tranquility in America until the Negro is granted his citizenship rights. The whirlwinds of revolt will continue to shake the foundations of our nation until the bright day of justice emerges.
 
-//         // 3. round
-//         for block in blocks {
-//             let mut state = block;
-//             // round 0
-//             state = self.add_round_key(state, ext_key[0])?;
+But there is something that I must say to my people, who stand on the warm threshold which leads into the palace of justice: In the process of gaining our rightful place, we must not be guilty of wrongful deeds. Let us not seek to satisfy our thirst for freedom by drinking from the cup of bitterness and hatred. We must forever conduct our struggle on the high plane of dignity and discipline. We must not allow our creative protest to degenerate into physical violence. Again and again, we must rise to the majestic heights of meeting physical force with soul force.
 
-//             // round 1 ~ 9
-//             for key_idx in 1..10 {
-//                 // byte sub
-//                 state = self.sub_bytes(state);
+The marvelous new militancy which has engulfed the Negro community must not lead us to a distrust of all white people, for many of our white brothers, as evidenced by their presence here today, have come to realize that their destiny is tied up with our destiny. And they have come to realize that their freedom is inextricably bound to our freedom.
 
-//                 // shift rows
-//                 state = self.shift_rows(state);
+We cannot walk alone.
 
-//                 // mix columns
-//                 state = self.mix_columns(state)?;
+And as we walk, we must make the pledge that we shall always march ahead.
 
-//                 // add round key
-//                 state = self.add_round_key(state, ext_key[key_idx])?;
-//             }
+We cannot turn back.
 
-//             // round 10
-//             // byte sub
-//             state = self.sub_bytes(state);
+There are those who are asking the devotees of civil rights, \"When will you be satisfied?" We can never be satisfied as long as the Negro is the victim of the unspeakable horrors of police brutality. We can never be satisfied as long as our bodies, heavy with the fatigue of travel, cannot gain lodging in the motels of the highways and the hotels of the cities. **We cannot be satisfied as long as the negro's basic mobility is from a smaller ghetto to a larger one. We can never be satisfied as long as our children are stripped of their self-hood and robbed of their dignity by signs stating: "For Whites Only."** We cannot be satisfied as long as a Negro in Mississippi cannot vote and a Negro in New York believes he has nothing for which to vote. No, no, we are not satisfied, and we will not be satisfied until "justice rolls down like waters, and righteousness like a mighty stream."1
 
-//             // shift rows
-//             state = self.shift_rows(state);
+I am not unmindful that some of you have come here out of great trials and tribulations. Some of you have come fresh from narrow jail cells. And some of you have come from areas where your quest -- quest for freedom left you battered by the storms of persecution and staggered by the winds of police brutality. You have been the veterans of creative suffering. Continue to work with the faith that unearned suffering is redemptive. Go back to Mississippi, go back to Alabama, go back to South Carolina, go back to Georgia, go back to Louisiana, go back to the slums and ghettos of our northern cities, knowing that somehow this situation can and will be changed.
 
-//             // add round key
-//             state = self.add_round_key(state, ext_key[10])?;
+Let us not wallow in the valley of despair, I say to you today, my friends.
 
-//             res.append(&mut state.to_vec());
-//         }
+And so even though we face the difficulties of today and tomorrow, I still have a dream. It is a dream deeply rooted in the American dream.
 
-//         Ok(res)
-//     }
+I have a dream that one day this nation will rise up and live out the true meaning of its creed: "We hold these truths to be self-evident, that all men are created equal."
 
-//     // pub fn decrypt(&self, key: [u8; 16]) -> Vec<u8> {
-//     //     self.data.clone()
-//     // }
+I have a dream that one day on the red hills of Georgia, the sons of former slaves and the sons of former slave owners will be able to sit down together at the table of brotherhood.
 
-//     fn xtime(&self, x: u8, byte: u8) -> Result<u8, BoxedError> {
-//         let res = match x {
-//             1 => self.xtime_1(byte)?,
-//             2 => self.xtime_2(byte)?,
-//             3 => self.xtime_3(byte)?,
-//             _ => {
-//                 return Err(format!("Not implemented yet").into());
-//             }
-//         };
+I have a dream that one day even the state of Mississippi, a state sweltering with the heat of injustice, sweltering with the heat of oppression, will be transformed into an oasis of freedom and justice.
 
-//         Ok(res)
-//     }
+I have a dream that my four little children will one day live in a nation where they will not be judged by the color of their skin but by the content of their character.
 
-//     #[inline]
-//     fn xtime_1(&self, byte: u8) -> Result<u8, BoxedError> {
-//         Ok(byte)
-//     }
+I have a dream today!
 
-//     #[inline]
-//     fn xtime_2(&self, byte: u8) -> Result<u8, BoxedError> {
-//         let mut res = byte;
+I have a dream that one day, down in Alabama, with its vicious racists, with its governor having his lips dripping with the words of "interposition" and "nullification" -- one day right there in Alabama little black boys and black girls will be able to join hands with little white boys and white girls as sisters and brothers.
 
-//         if res & 0x80 == 0x80 {
-//             res = 0x1b ^ (res << 1);
-//         } else {
-//             res = res << 1;
-//         }
+I have a dream today!
 
-//         Ok(res)
-//     }
+I have a dream that one day every valley shall be exalted, and every hill and mountain shall be made low, the rough places will be made plain, and the crooked places will be made straight; "and the glory of the Lord shall be revealed and all flesh shall see it together."2
 
-//     #[inline]
-//     fn xtime_3(&self, byte: u8) -> Result<u8, BoxedError> {
-//         // let l = self.xtime_1(word.clone())?;
-//         // let r = self.xtime_2(word.clone())?;
+This is our hope, and this is the faith that I go back to the South with.
 
-//         // let res = self.addition(l, r)?;
+With this faith, we will be able to hew out of the mountain of despair a stone of hope. With this faith, we will be able to transform the jangling discords of our nation into a beautiful symphony of brotherhood. With this faith, we will be able to work together, to pray together, to struggle together, to go to jail together, to stand up for freedom together, knowing that we will be free one day.
 
-//         let res = self.addition(self.xtime_2(byte)?, self.xtime_1(byte)?)?;
+And this will be the day -- this will be the day when all of God's children will be able to sing with new meaning:
 
-//         Ok(res)
-//     }
+    My country 'tis of thee, sweet land of liberty, of thee I sing. Land where my fathers died, land of the Pilgrim's pride,    From every mountainside, let freedom ring! 
 
-//     fn addition(&self, l: u8, r: u8) -> Result<u8, BoxedError> {
-//         Ok(l ^ r)
-//     }
-// }
+And if America is to be a great nation, this must become true.
 
-// pub fn padding(data: Vec<u8>) -> Vec<u8> {
-//     let mut res = data;
+And so let freedom ring from the prodigious hilltops of New Hampshire.
 
-//     while res.len() % 16 != 0 {
-//         res.push(0u8);
-//     }
+    Let freedom ring from the mighty mountains of New York.
 
-//     res
-// }
+    Let freedom ring from the heightening Alleghenies of Pennsylvania.
+
+    Let freedom ring from the snow-capped Rockies of Colorado.
+
+    Let freedom ring from the curvaceous slopes of California.
+
+But not only that:
+
+    Let freedom ring from Stone Mountain of Georgia.
+
+    Let freedom ring from Lookout Mountain of Tennessee.
+
+    Let freedom ring from every hill and molehill of Mississippi.
+
+    From every mountainside, let freedom ring.
+
+And when this happens, and when we allow freedom ring, when we let it ring from every village and every hamlet, from every state and every city, we will be able to speed up that day when all of God's children, black men and white men, Jews and Gentiles, Protestants and Catholics, will be able to join hands and sing in the words of the old Negro spiritual:
+
+        Free at last! Free at last!
+
+        Thank God Almighty, we are free at last!
+"#
+        .split_ascii_whitespace()
+        .collect::<String>()
+        .as_bytes()
+        .to_vec()
+}
