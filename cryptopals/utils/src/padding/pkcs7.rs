@@ -9,3 +9,25 @@ pub fn pkcs7(data: &mut Vec<u8>, block_size: usize) {
         }
     }
 }
+
+pub fn trim_pkcs7(data: &mut Vec<u8>, block_size: usize) {
+    let last_block: Vec<u8> = data[data.len() - block_size..data.len()]
+        .try_into()
+        .unwrap();
+
+    let maybe_pad = last_block[block_size - 1];
+
+    let mut count = 0;
+
+    for idx in last_block.len() - maybe_pad as usize..block_size {
+        if last_block[idx] == maybe_pad {
+            count += 1;
+        }
+    }
+
+    if count == maybe_pad {
+        for _ in 0..count {
+            data.pop();
+        }
+    }
+}

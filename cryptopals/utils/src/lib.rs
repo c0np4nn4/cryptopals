@@ -3,6 +3,7 @@ pub mod base64;
 pub mod crypto;
 pub mod hamming_distance;
 pub mod padding;
+pub mod profile;
 pub mod types;
 pub mod xor;
 
