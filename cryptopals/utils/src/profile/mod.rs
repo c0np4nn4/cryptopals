@@ -1,7 +1,7 @@
 use core::fmt;
 
 use crate::{
-    crypto::aes::{decrypt_ecb, encrypt_ecb, encrypt_ecb_with_unknown_key},
+    crypto::aes::{decrypt_ecb, encrypt_ecb},
     padding::pkcs7::trim_pkcs7,
     BoxedError,
 };

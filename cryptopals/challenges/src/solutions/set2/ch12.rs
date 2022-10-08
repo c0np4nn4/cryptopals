@@ -1,11 +1,6 @@
 use std::{collections::HashMap, fs};
 
-use utils::{
-    base64::base64_dec,
-    crypto::aes::{
-        encrypt_ecb, encrypt_ecb_with_unknown_key, get_random_aes_key,
-    },
-};
+use utils::{base64::base64_dec, crypto::aes::encrypt_ecb_with_unknown_key};
 
 #[test]
 fn chal_12() {
