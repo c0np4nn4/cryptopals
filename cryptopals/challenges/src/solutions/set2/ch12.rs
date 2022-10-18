@@ -29,8 +29,7 @@ fn chal_12() {
 
         prefix.append(&mut data_clone);
 
-        let comparison =
-            encrypt_ecb_with_unknown_key(&mut prefix)[buffer.len()..].to_vec();
+        let comparison = encrypt_ecb_with_unknown_key(&mut prefix)[buffer.len()..].to_vec();
 
         if target.eq(&comparison) {
             block_size = size;

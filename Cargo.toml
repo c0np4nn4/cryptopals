@@ -4,5 +4,6 @@ members = [ #
   "cryptopals/challenges",
   "cryptopals/utils",
   # "cryptopals",
+  "cryptopals/bin",
 
 ]

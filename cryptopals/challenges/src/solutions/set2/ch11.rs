@@ -1,8 +1,8 @@
 use rand;
 use utils::{
     crypto::aes::{
-        detect_ecb_probability, encrypt_cbc, encrypt_ecb, get_data,
-        get_random_aes_iv, get_random_aes_key,
+        self, detect_ecb_probability, encrypt_cbc, encrypt_ecb, get_random_aes_iv,
+        get_random_aes_key,
     },
     padding::{append_rand_bytes, prepend_rand_bytes},
 };
@@ -18,7 +18,7 @@ fn chal_11() {
 fn foo() {
     let key = get_random_aes_key();
 
-    let mut data = get_data();
+    let mut data = aes::get_dummy_data();
 
     prepend_rand_bytes(&mut data, 5, 10);
 

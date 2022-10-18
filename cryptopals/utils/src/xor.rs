@@ -6,12 +6,7 @@ pub fn fixed_xor(l: Vec<u8>, r: Vec<u8>) -> Result<Vec<u8>, BoxedError> {
     // let r = casting::hex_string_to_u8_vec(r)?;
 
     if l.len() != r.len() {
-        return Err(format!(
-            "length is different, {} and {}",
-            l.len(),
-            r.len()
-        )
-        .into());
+        return Err(format!("length is different, {} and {}", l.len(), r.len()).into());
     }
 
     let mut res = Vec::<u8>::new();
@@ -33,10 +28,7 @@ pub fn fixed_xor_word(l: [u8; 4], r: [u8; 4]) -> Result<[u8; 4], BoxedError> {
     Ok(res)
 }
 
-pub fn repeating_key_xor(
-    pt: String,
-    key: String,
-) -> Result<String, BoxedError> {
+pub fn repeating_key_xor(pt: String, key: String) -> Result<String, BoxedError> {
     let pt = pt.as_bytes();
 
     let key = key.as_bytes();

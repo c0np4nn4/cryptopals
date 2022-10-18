@@ -1,9 +1,16 @@
 [package]
-name = "challenges"
+name = "main"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 utils = { path = "../utils" }
+challenges = { path = "../challenges" }
+
 aes = "0.8.1"
 rand = "0.8.5"
+
+[[bin]]
+name = "main"
+path = "./main.rs"
+test = false

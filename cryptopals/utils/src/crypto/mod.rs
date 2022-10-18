@@ -1,2 +1,2 @@
 pub mod aes;
-mod aes_impl;
+pub mod aes_core;
