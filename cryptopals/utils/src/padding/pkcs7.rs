@@ -10,7 +10,7 @@ pub fn pkcs7(data: &mut Vec<u8>, block_size: usize) {
     }
 }
 
-pub fn trim_pkcs7(data: &mut Vec<u8>, block_size: usize) {
+pub fn verify_pkcs7(data: &mut Vec<u8>, block_size: usize) -> bool {
     let last_block: Vec<u8> = data[data.len() - block_size..data.len()]
         .try_into()
         .unwrap();
@@ -26,6 +26,20 @@ pub fn trim_pkcs7(data: &mut Vec<u8>, block_size: usize) {
     }
 
     if count == maybe_pad {
+        true
+    } else {
+        false
+    }
+}
+
+pub fn trim_pkcs7(data: &mut Vec<u8>, block_size: usize) {
+    if verify_pkcs7(data, block_size) {
+        let last_block: Vec<u8> = data[data.len() - block_size..data.len()]
+            .try_into()
+            .unwrap();
+
+        let count = last_block[block_size - 1];
+
         for _ in 0..count {
             data.pop();
         }
