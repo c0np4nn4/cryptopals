@@ -7,3 +7,6 @@ members = [ #
   "cryptopals/bin",
 
 ]
+
+[profile.test]
+opt-level = 3

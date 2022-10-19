@@ -7,3 +7,6 @@ edition = "2021"
 utils = { path = "../utils" }
 aes = "0.8.1"
 rand = "0.8.5"
+
+[lib]
+doctest = true

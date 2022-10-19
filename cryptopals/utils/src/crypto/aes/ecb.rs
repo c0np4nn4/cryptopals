@@ -7,6 +7,7 @@ use aes::Aes128;
 use lazy_static::lazy_static;
 
 use crate::padding::pkcs7::pkcs7;
+use crate::xor::fixed_xor;
 
 use super::BLOCK_SIZE;
 
@@ -77,28 +78,38 @@ pub fn detect_ecb(data: Vec<u8>) -> Option<Vec<(usize, usize)>> {
 pub fn detect_ecb_probability(data: Vec<u8>) -> f32 {
     let mut probability: f32 = 0.0;
 
-    for i in (0..data.len()).step_by(16) {
-        for j in (i + 16..data.len()).step_by(16) {
-            let chunk_1: [u8; 16] = data[i..i + 16].try_into().unwrap();
+    for i in (0..data.len() - 16).step_by(16) {
+        let chunk_1: [u8; 16] = data[i..i + 16].try_into().unwrap();
 
-            let chunk_2: [u8; 16] = data[j..j + 16].try_into().unwrap();
+        let chunk_2: [u8; 16] = data[i + 16..i + 32].try_into().unwrap();
 
-            // // TODO
-            // // compare the byte-sequence, not the block itself
-            // // calculate the similarity between the two chunks
+        // // TODO
+        // // compare the byte-sequence, not the block itself
+        // // calculate the similarity between the two chunks
 
-            let mut similarity: f32 = 0.0;
-            for k in 0..12 {
-                if chunk_1[k..k + 4] == chunk_2[k..k + 4] {
+        let mut similarity: f32 = 0.0;
+        for k in 0..12 {
+            let word_1: Vec<u8> = chunk_1[k..k + 4].to_vec();
+            let word_2: Vec<u8> = chunk_2[k..k + 4].to_vec();
+
+            let res = fixed_xor(word_1, word_2).unwrap();
+
+            let _ = res.into_iter().map(|b| {
+                if b == 0x00 {
                     similarity += 1.0;
                 }
-            }
-            similarity.div_assign(16.0);
+            });
 
-            probability.add_assign(similarity);
+            // if chunk_1[k..k + 4] == chunk_2[k..k + 4] {
+            //     similarity += 1.0;
+            // }
         }
+        // similarity.div_assign(16.0);
+
+        probability += similarity;
     }
 
+    println!("prob: {:#?}", probability);
     probability
 }
 

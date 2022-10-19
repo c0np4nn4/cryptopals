@@ -2,6 +2,7 @@ pub mod attack;
 pub mod base64;
 pub mod crypto;
 pub mod hamming_distance;
+pub mod oracles;
 pub mod padding;
 pub mod profile;
 pub mod types;

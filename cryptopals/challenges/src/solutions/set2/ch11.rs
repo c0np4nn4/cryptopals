@@ -42,7 +42,9 @@ fn foo() {
 
     if prob_ecb > 0.0 {
         println!("Detect     ECB(Electronic Code Block) mode");
+        assert_ne!(prob_ecb, 0.0);
     } else {
         println!("Detect     CBC(Cipher Block Chaining) mode");
+        assert_eq!(prob_ecb, 0.0);
     }
 }
