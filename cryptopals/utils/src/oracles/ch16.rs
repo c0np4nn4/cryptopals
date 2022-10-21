@@ -2,8 +2,8 @@ use crate::crypto::aes::{self, decrypt_cbc, encrypt_cbc, get_random_aes_key, BLO
 
 pub struct Oracle16 {
     key: [u8; 16],
-    prefix: String,
-    postfix: String,
+    pub prefix: String,
+    pub postfix: String,
 }
 
 impl Oracle16 {
@@ -25,18 +25,19 @@ impl Oracle16 {
         // if input_data.contains(";admin=true;".as_bytes().to_vec()) {
         //     panic!()
         // }
-        // check
-        {
-            let data_tmp = input_data.clone();
-            let data_tmp = String::from_utf8_lossy(&data_tmp);
 
-            let data_tmp = data_tmp
-                .split(";")
-                .into_iter()
-                .filter(|value| value.clone().eq(&"admin=true".to_string()))
-                .next()
-                .is_some();
-        }
+        // check
+        // {
+        //     let data_tmp = input_data.clone();
+        //     let data_tmp = String::from_utf8_lossy(&data_tmp);
+
+        //     let data_tmp = data_tmp
+        //         .split(";")
+        //         .into_iter()
+        //         .filter(|value| value.clone().eq(&"admin=true".to_string()))
+        //         .next()
+        //         .is_some();
+        // }
 
         let mut prefix = self.prefix.clone().as_bytes().to_vec();
         let mut postfix = self.postfix.clone().as_bytes().to_vec();
