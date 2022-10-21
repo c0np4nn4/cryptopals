@@ -7,29 +7,15 @@ use utils::{
 fn chal_16() {
     let oracle = Oracle16::new();
 
-    // let data = "AAAAAAAAA;admin=true;AAAAAAA".as_bytes().to_vec();
+    let data = Vec::<u8>::new();
 
-    // let handle_block = [0u8; BLOCK_SIZE];
-    // let target_block = [0u8; BLOCK_SIZE];
-    let data = vec![0u8; 32];
+    let inject_data = ";admin=true;";
 
-    let iv = get_random_aes_iv();
+    let delimiter: char = ';';
 
-    // let ct = oracle.encrypt(data, iv);
-    let mut ct = oracle.encrypt(data, iv);
+    let payload = bit_flipping_attack(&oracle, inject_data, delimiter);
 
-    let pt = oracle.decrypt(ct.clone(), iv);
-    {
-        // bit flipping
+    let res = oracle.try_to_access_as_admin(payload);
 
-        // inject data have size less than BLOCK_SIZE
-        let inject_data = "admin=true";
-
-        let delimiter: char = ';';
-
-        bit_flipping_attack(&mut ct, pt, inject_data, delimiter);
-    }
-    // let pt = oracle.decrypt(ct, iv);
-
-    // println!("pt: {:?}", String::from_utf8(pt));
+    assert_eq!(res, true);
 }

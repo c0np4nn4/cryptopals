@@ -50,6 +50,8 @@ pub fn decrypt_cbc(key: Vec<u8>, data: Vec<u8>, iv: [u8; BLOCK_SIZE]) -> Vec<u8>
         .try_into()
         .unwrap();
 
+    // println!("\n\t[*] first block: {:02x?}", last_block);
+
     let mut res = Vec::new();
 
     for idx in (0..=data.len() - BLOCK_SIZE * 2).rev().step_by(BLOCK_SIZE) {
@@ -59,7 +61,12 @@ pub fn decrypt_cbc(key: Vec<u8>, data: Vec<u8>, iv: [u8; BLOCK_SIZE]) -> Vec<u8>
 
         let previous_block: [u8; BLOCK_SIZE] = data[idx..idx + BLOCK_SIZE].try_into().unwrap();
 
+        // println!("\n[DEBUG]:");
+        // println!("\t[*] round block: {:02x?}", block);
+        // println!("\t[*] previ block: {:02x?}", previous_block);
+
         let block = fixed_xor(block.to_vec(), previous_block.to_vec()).unwrap();
+        // println!("\t[*] after xor  : {:02x?}", block);
 
         let mut tmp: Vec<u8> = block.clone();
 
