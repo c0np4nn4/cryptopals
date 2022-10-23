@@ -1,4 +1,4 @@
-use utils::padding::pkcs7::{pkcs7, verify_pkcs7};
+use utils::padding::pkcs7::verify_pkcs7;
 
 #[test]
 fn chal_15() {

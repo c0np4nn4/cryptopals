@@ -1,13 +1,8 @@
-use utils::{
-    attack::aes_bit_flipping::bit_flipping_attack, crypto::aes::get_random_aes_iv,
-    oracles::Oracle16,
-};
+use utils::{attack::aes_bit_flipping::bit_flipping_attack, oracles::Oracle16};
 
 #[test]
 fn chal_16() {
     let oracle = Oracle16::new();
-
-    let data = Vec::<u8>::new();
 
     let inject_data = ";admin=true;";
 
@@ -15,7 +10,7 @@ fn chal_16() {
 
     let payload = bit_flipping_attack(&oracle, inject_data, delimiter);
 
-    let res = oracle.try_to_access_as_admin(payload);
+    let res = oracle.try_to_access_as_admin(payload).unwrap();
 
     assert_eq!(res, true);
 }

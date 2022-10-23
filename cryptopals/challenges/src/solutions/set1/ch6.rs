@@ -1,9 +1,7 @@
 use std::fs;
 
 use utils::{
-    attack::{
-        break_arbitrary_size_repeating_key_xor_cipher, ArbSizedKeyAttackResult,
-    },
+    attack::{break_arbitrary_size_repeating_key_xor_cipher, ArbSizedKeyAttackResult},
     base64::base64_dec,
 };
 

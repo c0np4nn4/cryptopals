@@ -89,7 +89,7 @@ fn chal_14() {
     let mut data_queue = vec!['A' as u8; 15];
 
     for block_idx in (0..ciphertext.len() - 16).step_by(16) {
-        let mut pad = vec![];
+        let mut pad;
 
         for pad_size in 1..=16 {
             pad = vec![];

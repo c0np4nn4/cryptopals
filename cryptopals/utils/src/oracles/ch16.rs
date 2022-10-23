@@ -1,4 +1,8 @@
-use crate::crypto::aes::{self, decrypt_cbc, encrypt_cbc, get_random_aes_key, BLOCK_SIZE};
+use crate::crypto::aes::{
+    decrypt_cbc, encrypt_cbc, get_random_aes_iv, get_random_aes_key, BLOCK_SIZE,
+};
+
+use super::OracleError;
 
 pub struct Oracle16 {
     key: [u8; BLOCK_SIZE],
@@ -15,7 +19,7 @@ impl Oracle16 {
 
         let postfix = ";comment2=%20like%20a%20pound%20of%20bacon".to_string();
 
-        let iv = get_random_aes_key();
+        let iv = get_random_aes_iv();
 
         Oracle16 {
             key,
@@ -57,13 +61,13 @@ impl Oracle16 {
         encrypt_cbc(self.key.to_vec(), &mut data, self.iv)
     }
 
-    pub fn decrypt(&self, input_data: Vec<u8>) -> Vec<u8> {
+    pub fn decrypt(&self, input_data: Vec<u8>) -> Result<Vec<u8>, OracleError> {
         // println!("\n\n[!!!] oracle decryption has been started");
         decrypt_cbc(self.key.to_vec(), input_data, self.iv)
     }
 
-    pub fn try_to_access_as_admin(&self, input_data: Vec<u8>) -> bool {
-        let vuln_pt = self.decrypt(input_data);
+    pub fn try_to_access_as_admin(&self, input_data: Vec<u8>) -> Result<bool, OracleError> {
+        let vuln_pt = self.decrypt(input_data)?;
 
         println!("vuln_pt: {:?}", String::from_utf8_lossy(&vuln_pt));
 
@@ -72,11 +76,11 @@ impl Oracle16 {
         for idx in 0..vuln_pt.len() {
             if vuln_pt[idx] == target_data[0] {
                 if vuln_pt[idx..idx + target_data.len()] == target_data[..] {
-                    return true;
+                    return Ok(true);
                 }
             }
         }
 
-        return false;
+        return Ok(false);
     }
 }

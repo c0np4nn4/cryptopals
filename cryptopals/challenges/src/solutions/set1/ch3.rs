@@ -15,8 +15,7 @@ fn chal_3() {
 
     let ct = decode_hex(ct).unwrap();
 
-    let SingleCharKeyAttackResult { pt, .. } =
-        single_char_key_attack(ct).unwrap();
+    let SingleCharKeyAttackResult { pt, .. } = single_char_key_attack(ct).unwrap();
 
     println!("[set1/ch3] res: {:?}", pt);
 

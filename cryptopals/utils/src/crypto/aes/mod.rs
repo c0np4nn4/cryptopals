@@ -5,7 +5,35 @@ pub use cbc::*;
 pub use ecb::*;
 use rand::Rng;
 
+use crate::BoxedError;
+
 pub const BLOCK_SIZE: usize = 16;
+
+pub fn into_aes_blocks(data: Vec<u8>) -> Result<Vec<[u8; 16]>, BoxedError> {
+    if data.len() % 16 != 0 {
+        return Err(format!(
+            "AES block size should be '16', found data size: {}",
+            data.len()
+        )
+        .into());
+    } else {
+        let blocks: Vec<[u8; BLOCK_SIZE]> = data
+            .iter()
+            .enumerate()
+            .step_by(BLOCK_SIZE)
+            .map(|(i, _)| {
+                let mut tmp = [0u8; 16];
+                for j in 0..BLOCK_SIZE {
+                    tmp[j] = data[i + j];
+                }
+
+                tmp
+            })
+            .collect();
+
+        Ok(blocks)
+    }
+}
 
 pub fn get_random_data(len: u32) -> Vec<u8> {
     let mut data: Vec<u8> = Vec::new();

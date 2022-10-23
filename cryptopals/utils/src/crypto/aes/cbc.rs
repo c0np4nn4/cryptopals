@@ -3,12 +3,9 @@ use aes::{
     Aes128,
 };
 
-use crate::{
-    padding::pkcs7::{pkcs7, trim_pkcs7},
-    xor::fixed_xor,
-};
+use crate::{padding::pkcs7::pkcs7, xor::fixed_xor, BoxedError};
 
-use super::BLOCK_SIZE;
+use super::{into_aes_blocks, BLOCK_SIZE};
 
 pub fn encrypt_cbc(key: Vec<u8>, data: &mut Vec<u8>, iv: [u8; BLOCK_SIZE]) -> Vec<u8> {
     pkcs7(data, BLOCK_SIZE);
@@ -41,57 +38,40 @@ pub fn encrypt_cbc(key: Vec<u8>, data: &mut Vec<u8>, iv: [u8; BLOCK_SIZE]) -> Ve
     res
 }
 
-pub fn decrypt_cbc(key: Vec<u8>, data: Vec<u8>, iv: [u8; BLOCK_SIZE]) -> Vec<u8> {
+pub fn decrypt_cbc(
+    key: Vec<u8>,
+    data: Vec<u8>,
+    iv: [u8; BLOCK_SIZE],
+) -> Result<Vec<u8>, BoxedError> {
     let key = GenericArray::from_slice(&key);
 
     let cipher = Aes128::new(&key);
 
-    let mut last_block: [u8; BLOCK_SIZE] = data[data.len() - BLOCK_SIZE..data.len()]
-        .try_into()
-        .unwrap();
+    let blocks = into_aes_blocks(data)?;
 
-    // println!("\n\t[*] first block: {:02x?}", last_block);
+    let mut res = Vec::<u8>::new();
 
-    let mut res = Vec::new();
+    // blocks[0]
+    {
+        let mut target_block = GenericArray::from(blocks.clone()[0]);
 
-    for idx in (0..=data.len() - BLOCK_SIZE * 2).rev().step_by(BLOCK_SIZE) {
-        let mut block = GenericArray::from_slice(&last_block).to_owned();
+        cipher.decrypt_block(&mut target_block);
 
-        cipher.decrypt_block(&mut block);
+        let mut res_block = fixed_xor(target_block.to_vec(), iv.to_vec())?;
 
-        let previous_block: [u8; BLOCK_SIZE] = data[idx..idx + BLOCK_SIZE].try_into().unwrap();
-
-        // println!("\n[DEBUG]:");
-        // println!("\t[*] round block: {:02x?}", block);
-        // println!("\t[*] previ block: {:02x?}", previous_block);
-
-        let block = fixed_xor(block.to_vec(), previous_block.to_vec()).unwrap();
-        // println!("\t[*] after xor  : {:02x?}", block);
-
-        let mut tmp: Vec<u8> = block.clone();
-
-        tmp.append(&mut res);
-
-        res = tmp;
-
-        last_block = previous_block;
+        res.append(&mut res_block);
     }
 
-    let last_block: [u8; BLOCK_SIZE] = data[0..BLOCK_SIZE].try_into().unwrap();
+    // blocks[1..]
+    for i in 1..blocks.len() {
+        let mut target_block = GenericArray::from(blocks.clone()[i]);
 
-    let mut block = GenericArray::from_slice(&last_block).to_owned();
+        cipher.decrypt_block(&mut target_block);
 
-    cipher.decrypt_block(&mut block);
+        let mut res_block = fixed_xor(target_block.to_vec(), blocks[i - 1].clone().to_vec())?;
 
-    let block = fixed_xor(block.to_vec(), iv.to_vec()).unwrap();
+        res.append(&mut res_block);
+    }
 
-    let mut tmp: Vec<u8> = block.clone();
-
-    tmp.append(&mut res);
-
-    res = tmp;
-
-    trim_pkcs7(&mut res, BLOCK_SIZE);
-
-    res
+    Ok(res)
 }

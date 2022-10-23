@@ -14,16 +14,14 @@ fn chal_4() {
         .trim()
         .to_string();
 
-    let ct_candidates: Vec<String> =
-        ct_candidates.split('\n').map(|ct| ct.to_string()).collect();
+    let ct_candidates: Vec<String> = ct_candidates.split('\n').map(|ct| ct.to_string()).collect();
 
     let mut attack_result = HashMap::<String, f64>::new();
 
     for ct in ct_candidates {
         let ct = decode_hex(ct).unwrap();
 
-        let SingleCharKeyAttackResult { pt, score, .. } =
-            single_char_key_attack(ct).unwrap();
+        let SingleCharKeyAttackResult { pt, score, .. } = single_char_key_attack(ct).unwrap();
 
         attack_result.insert(pt, score);
     }
