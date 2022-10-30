@@ -4,7 +4,6 @@ use crate::BoxedError;
 
 pub fn pkcs7(data: &mut Vec<u8>, block_size: usize) {
     let pad = block_size - (data.len() % block_size);
-    println!("pad: {:?}", pad);
 
     if pad <= 16 {
         for _ in 0..pad {

@@ -6,7 +6,6 @@ use crate::{types, BoxedError};
 pub struct Base64Table {
     pub table: [char; 64],
 }
-// const TABLE: [char; 64] =
 
 impl Base64Table {
     fn new() -> Base64Table {
@@ -54,59 +53,15 @@ fn second_word(byte: u8) -> u8 {
 }
 
 fn padding_0_byte(data: Vec<u8>) -> Result<String, BoxedError> {
-    let base64_table = Base64Table::new();
-
-    let mut base64_chunk: [u8; 4] = [0; 4];
-
-    let mut res: String = String::default();
-
-    for idx in (0..data.len()).step_by(3) {
-        base64_chunk[0] = u8_to_u6(data[idx + 0] >> 2);
-        base64_chunk[1] =
-            u8_to_u6((data[idx + 0] << 4) | second_word(data[idx + 1] >> 4));
-        base64_chunk[2] =
-            u8_to_u6((data[idx + 1] << 2) | second_word(data[idx + 2] >> 6));
-        base64_chunk[3] = u8_to_u6(data[idx + 2]);
-
-        res = format!(
-            "{}{}{}{}{}",
-            res,
-            base64_table.table[base64_chunk[0] as usize],
-            base64_table.table[base64_chunk[1] as usize],
-            base64_table.table[base64_chunk[2] as usize],
-            base64_table.table[base64_chunk[3] as usize],
-        );
-    }
+    let res = _base_64_enc(data);
 
     Ok(res)
 }
 
 fn padding_1_byte(mut data: Vec<u8>) -> Result<String, BoxedError> {
-    let base64_table = Base64Table::new();
-
     data.push(0 as u8);
 
-    let mut base64_chunk: [u8; 4] = [0; 4];
-
-    let mut res: String = String::default();
-
-    for idx in (0..data.len()).step_by(3) {
-        base64_chunk[0] = u8_to_u6(data[idx + 0] >> 2);
-        base64_chunk[1] =
-            u8_to_u6((data[idx + 0] << 4) | second_word(data[idx + 1] >> 4));
-        base64_chunk[2] =
-            u8_to_u6((data[idx + 1] << 2) | second_word(data[idx + 2] >> 6));
-        base64_chunk[3] = u8_to_u6(data[idx + 2]);
-
-        res = format!(
-            "{}{}{}{}{}",
-            res,
-            base64_table.table[base64_chunk[0] as usize],
-            base64_table.table[base64_chunk[1] as usize],
-            base64_table.table[base64_chunk[2] as usize],
-            base64_table.table[base64_chunk[3] as usize],
-        );
-    }
+    let mut res = _base_64_enc(data);
 
     res.pop();
     res = format!("{}=", res);
@@ -115,32 +70,10 @@ fn padding_1_byte(mut data: Vec<u8>) -> Result<String, BoxedError> {
 }
 
 fn padding_2_byte(mut data: Vec<u8>) -> Result<String, BoxedError> {
-    let base64_table = Base64Table::new();
-
     data.push(0 as u8);
     data.push(0 as u8);
 
-    let mut base64_chunk: [u8; 4] = [0; 4];
-
-    let mut res: String = String::default();
-
-    for idx in (0..data.len()).step_by(3) {
-        base64_chunk[0] = u8_to_u6(data[idx + 0] >> 2);
-        base64_chunk[1] =
-            u8_to_u6((data[idx + 0] << 4) | second_word(data[idx + 1] >> 4));
-        base64_chunk[2] =
-            u8_to_u6((data[idx + 1] << 2) | second_word(data[idx + 2] >> 6));
-        base64_chunk[3] = u8_to_u6(data[idx + 2]);
-
-        res = format!(
-            "{}{}{}{}{}",
-            res,
-            base64_table.table[base64_chunk[0] as usize],
-            base64_table.table[base64_chunk[1] as usize],
-            base64_table.table[base64_chunk[2] as usize],
-            base64_table.table[base64_chunk[3] as usize],
-        );
-    }
+    let mut res = _base_64_enc(data);
 
     res.pop();
     res.pop();
@@ -166,6 +99,32 @@ pub fn base64_enc(data: String) -> Result<String, BoxedError> {
     };
 
     Ok(res)
+}
+
+fn _base_64_enc(data: Vec<u8>) -> String {
+    let base64_table = Base64Table::new();
+
+    let mut base64_chunk: [u8; 4] = [0; 4];
+
+    let mut res: String = String::default();
+
+    for idx in (0..data.len()).step_by(3) {
+        base64_chunk[0] = u8_to_u6(data[idx + 0] >> 2);
+        base64_chunk[1] = u8_to_u6((data[idx + 0] << 4) | second_word(data[idx + 1] >> 4));
+        base64_chunk[2] = u8_to_u6((data[idx + 1] << 2) | second_word(data[idx + 2] >> 6));
+        base64_chunk[3] = u8_to_u6(data[idx + 2]);
+
+        res = format!(
+            "{}{}{}{}{}",
+            res,
+            base64_table.table[base64_chunk[0] as usize],
+            base64_table.table[base64_chunk[1] as usize],
+            base64_table.table[base64_chunk[2] as usize],
+            base64_table.table[base64_chunk[3] as usize],
+        );
+    }
+
+    res
 }
 
 pub fn base64_dec(data: String) -> Result<Vec<u8>, BoxedError> {

@@ -75,7 +75,7 @@ impl AES {
         Ok(res)
     }
 
-    pub fn decrypt(&self, key: [u8; 16]) -> Vec<u8> {
-        vec![]
-    }
+    // pub fn decrypt(&self, key: [u8; 16]) -> Vec<u8> {
+    //     vec![]
+    // }
 }

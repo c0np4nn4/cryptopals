@@ -4,7 +4,7 @@ use rand::Rng;
 
 use crate::{
     crypto::aes::{decrypt_cbc, encrypt_cbc, get_random_aes_iv, get_random_aes_key, BLOCK_SIZE},
-    padding::pkcs7::{trim_pkcs7, verify_pkcs7},
+    padding::pkcs7::verify_pkcs7,
 };
 
 use super::{Ciphertext, Key, OracleError, Plaintext, IV};
@@ -75,5 +75,15 @@ impl Oracle17 {
                 });
             }
         };
+    }
+
+    pub fn solve(&self, answer: Vec<u8>) -> bool {
+        let pt = decrypt_cbc(self.key.to_vec(), self.ciphertext.clone(), self.iv).unwrap();
+
+        if pt == answer {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

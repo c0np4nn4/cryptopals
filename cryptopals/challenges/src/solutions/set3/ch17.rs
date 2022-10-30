@@ -1,7 +1,6 @@
 use utils::{
-    base64::{self, base64_dec},
-    crypto::aes::{decrypt_cbc, into_aes_blocks, BLOCK_SIZE},
-    oracles::{into_block, Block, Oracle17, OracleResultStatus},
+    crypto::aes::{into_aes_blocks, BLOCK_SIZE},
+    oracles::{into_block, Block, Oracle17, OracleResultStatus, IV},
     xor::fixed_xor,
 };
 
@@ -12,56 +11,38 @@ fn chal_17() {
     let ct = oracle.ciphertext.clone();
     let iv = oracle.iv.clone();
 
-    // match oracle.verify_padding(ct.clone(), iv).unwrap().status {
-    //     OracleResultStatus::OK => {}
-    //     OracleResultStatus::ERR => panic!("error has been occurred"),
-    // }
+    let pt = padding_oracle_attack(&oracle, ct, iv);
 
-    {
-        //     let key = oracle.key;
-        //     let pt = decrypt_cbc(key.to_vec(), ct[0..16].to_vec(), iv).unwrap();
+    let res = oracle.solve(pt);
 
-        //     println!("pt: {:02x?}", pt);
-        //     println!("pt: {:?}", String::from_utf8(pt));
+    // let res = String::from_utf8(base64_dec(String::from_utf8(pt).unwrap()).unwrap()).unwrap();
 
-        // let block_1 = ct[0..16].to_vec();
+    assert_eq!(res, true);
+}
 
-        // let pt_1 = recover_plaintext(oracle, block_1, iv);
+fn padding_oracle_attack(oracle: &Oracle17, ct: Vec<u8>, iv: IV) -> Vec<u8> {
+    let mut init_block = vec![iv];
 
-        // println!("[!] pt: {:?}", pt_1);
+    let mut blocks = into_aes_blocks(ct).unwrap();
 
-        let mut init_block = vec![iv];
+    init_block.append(&mut blocks);
 
-        let mut blocks = into_aes_blocks(ct).unwrap();
+    let blocks: Vec<Block> = init_block;
 
-        init_block.append(&mut blocks);
+    let mut pt = Vec::<u8>::new();
 
-        let blocks: Vec<Block> = init_block;
-
-        let mut pt = Vec::<u8>::new();
-
-        for idx in 0..blocks.len() - 2 {
-            let mut tmp = recover_plaintext(&oracle, blocks[idx + 1].to_vec(), blocks[idx]);
-            pt.append(&mut tmp);
-        }
-
-        println!("res: {:02x?}", pt);
-        println!("res: {:?}", String::from_utf8(pt.clone()).unwrap());
-        println!(
-            "res: {:?}",
-            String::from_utf8(base64_dec(String::from_utf8(pt).unwrap()).unwrap())
-        );
+    for idx in 0..blocks.len() - 1 {
+        let mut tmp = recover_plaintext(&oracle, blocks[idx + 1].to_vec(), blocks[idx]);
+        pt.append(&mut tmp);
     }
+
+    pt
 }
 
 fn recover_plaintext(oracle: &Oracle17, block: Vec<u8>, origin_iv: [u8; 16]) -> Vec<u8> {
     let mut zeroing_iv = [0u8; 16];
 
     for ziv_idx in (0..16).rev() {
-        // println!("\n[111] block: {:02x?}", block.clone());
-
-        // println!("[111] zeroing_iv: {:02x?}", zeroing_iv);
-
         for b in 0u8..=255u8 {
             zeroing_iv[ziv_idx] = b;
 
@@ -71,8 +52,6 @@ fn recover_plaintext(oracle: &Oracle17, block: Vec<u8>, origin_iv: [u8; 16]) -> 
                 .status
             {
                 OracleResultStatus::OK => {
-                    // println!("[555] ziv_idx: {:?}", ziv_idx);
-
                     let ziv = zeroing_iv.to_vec();
 
                     let ziv = fixed_xor(ziv, vec![(16 - ziv_idx) as u8; BLOCK_SIZE]).unwrap();
@@ -92,22 +71,14 @@ fn recover_plaintext(oracle: &Oracle17, block: Vec<u8>, origin_iv: [u8; 16]) -> 
 
                     break;
                 }
-                OracleResultStatus::ERR => {
-                    // println!("OKAY Let's adjust the zeroing byte..\n");
-                    // println!("b: {:02x?}", b);
-                }
+                OracleResultStatus::ERR => {}
             };
         }
     }
 
-    // println!("zerong_iv: {:02x?}", zeroing_iv);
-
     let dec_result = fixed_xor(zeroing_iv.to_vec(), vec![0x10u8; BLOCK_SIZE]).unwrap();
-    // println!("dec_resul: {:02x?}", dec_result);
 
     let pt = fixed_xor(dec_result, origin_iv.to_vec()).unwrap();
-    // println!("pt:        {:02x?}", pt);
-    // println!("pt:        {:?}", String::from_utf8(pt.clone()));
 
     pt
 }

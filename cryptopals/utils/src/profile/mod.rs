@@ -42,9 +42,7 @@ impl Profile {
         )
     }
 
-    pub fn parsing_profile(
-        encoded_profile: String,
-    ) -> Result<Profile, BoxedError> {
+    pub fn parsing_profile(encoded_profile: String) -> Result<Profile, BoxedError> {
         let mut profile = encoded_profile.split('&').collect::<Vec<&str>>();
 
         if profile.len() != 3 {
@@ -66,11 +64,7 @@ impl Profile {
                 "user" => Role::User,
                 "admin" => Role::Admin,
                 _ => {
-                    return Err(format!(
-                        "invalid role has been found, role: {}",
-                        profile[2]
-                    )
-                    .into())
+                    return Err(format!("invalid role has been found, role: {}", profile[2]).into())
                 }
             }
         };
@@ -85,13 +79,10 @@ impl Profile {
         encrypt_ecb(key, &mut self.encode().as_bytes().to_vec())
     }
 
-    pub fn decrypt_aes(
-        key: Vec<u8>,
-        encrypted_profile: Vec<u8>,
-    ) -> Result<Profile, BoxedError> {
+    pub fn decrypt_aes(key: Vec<u8>, encrypted_profile: Vec<u8>) -> Result<Profile, BoxedError> {
         let mut res = decrypt_ecb(key, encrypted_profile);
 
-        trim_pkcs7(&mut res, 16);
+        trim_pkcs7(&mut res, 16).unwrap();
 
         // Profile::parsing_profile(res)
         Profile::parsing_profile(String::from_utf8(res).unwrap())
@@ -116,9 +107,7 @@ fn check_email_address_validity(email_address: &String) -> bool {
 
 pub fn profile_for(email_address: String) -> Result<Profile, BoxedError> {
     if !check_email_address_validity(&email_address) {
-        return Err(
-            format!("Invalid character has been found in parameter",).into()
-        );
+        return Err(format!("Invalid character has been found in parameter",).into());
     }
 
     let profile = Profile {
