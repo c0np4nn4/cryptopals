@@ -3,6 +3,7 @@ use lazy_static::lazy_static;
 use std::{char, collections::HashMap};
 
 pub mod aes_bit_flipping;
+pub mod padding_oracle_attack;
 
 // ref
 // LETTER_FREQ_TABLE
