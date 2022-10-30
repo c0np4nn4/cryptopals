@@ -25,7 +25,7 @@ impl AES {
         Ok(state::from_vec(next_state)?)
     }
 
-    /// encryption for `only one` block
+    /// encryption for `single` block
     pub fn encrypt(&self, data: Vec<u8>) -> Result<Vec<u8>, BoxedError> {
         let mut res: Vec<u8> = vec![];
 
@@ -35,7 +35,9 @@ impl AES {
 
         let mut data = data;
 
-        pkcs7(&mut data, BLOCK_SIZE);
+        if data.len() < 16 {
+            pkcs7(&mut data, BLOCK_SIZE);
+        }
 
         let mut state = state::from_vec(data)?;
 
