@@ -1,5 +1,3 @@
-use std::error;
-
 use crate::crypto::aes::BLOCK_SIZE;
 use std::error::Error;
 
@@ -22,3 +20,17 @@ pub type Key = [u8; BLOCK_SIZE];
 pub type Block = [u8; BLOCK_SIZE];
 
 pub type OracleError = Box<dyn Error>;
+
+pub fn into_block(v: Vec<u8>) -> Result<Block, OracleError> {
+    if v.len() != 16 {
+        return Err(format!("block len should be 16").into());
+    }
+
+    let mut res: [u8; BLOCK_SIZE] = [0u8; BLOCK_SIZE];
+
+    for i in 0..16 {
+        res[i] = v[i];
+    }
+
+    Ok(res)
+}

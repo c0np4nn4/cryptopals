@@ -4,8 +4,9 @@ use crate::BoxedError;
 
 pub fn pkcs7(data: &mut Vec<u8>, block_size: usize) {
     let pad = block_size - (data.len() % block_size);
+    println!("pad: {:?}", pad);
 
-    if pad < 16 {
+    if pad <= 16 {
         for _ in 0..pad {
             data.push(pad.try_into().expect("pad cannot be converted into u8"));
         }
@@ -17,9 +18,11 @@ pub fn verify_pkcs7(data: &mut Vec<u8>, block_size: usize) -> bool {
         .try_into()
         .unwrap();
 
-    let maybe_pad = last_block[block_size - 1];
+    // let maybe_pad = last_block[block_size - 1];
+    let maybe_pad = last_block.last().unwrap().to_owned();
+    // println!("maybe_pad: {:?}", maybe_pad);
 
-    if maybe_pad > 0x10 {
+    if maybe_pad > 0x10 || maybe_pad < 0x01 {
         return false;
     }
 
