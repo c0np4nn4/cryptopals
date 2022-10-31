@@ -4,10 +4,12 @@ use std::error::Error;
 mod ch14;
 mod ch16;
 mod ch17;
+mod ch19;
 
 pub use ch14::*;
 pub use ch16::*;
 pub use ch17::*;
+pub use ch19::*;
 
 pub type Plaintext = Vec<u8>;
 
