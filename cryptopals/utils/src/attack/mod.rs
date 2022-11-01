@@ -25,7 +25,7 @@ pub struct ArbSizedKeyAttackResult {
 lazy_static! {
     pub static ref LETTER_FREQ_TABLE: HashMap<char, f64> = {
         let mut m = HashMap::<char, f64>::new();
-        m.insert(' ', 12.5);
+        m.insert(' ', 15.0);
         m.insert('E', 12.02);
         m.insert('T', 9.10);
         m.insert('A', 8.12);
@@ -116,7 +116,7 @@ pub fn single_char_key_attack(ct: Vec<u8>) -> Result<SingleCharKeyAttackResult, 
 
     let (key, score) = (result.0.to_owned() as char, result.1.to_owned());
 
-    println!("[single_char_key_attack] key: {:?}", key.clone() as char);
+    // println!("[single_char_key_attack] key: {:?}", key.clone() as char);
 
     let pt: Vec<u8> = ct.iter().map(|ct_byte| ct_byte ^ key as u8).collect();
 

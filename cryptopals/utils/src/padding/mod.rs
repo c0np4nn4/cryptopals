@@ -29,3 +29,13 @@ pub fn append_rand_bytes(data: &mut Vec<u8>, min: usize, max: usize) {
 
     data.append(&mut postfix);
 }
+
+pub fn append_byte(data: &mut Vec<u8>, pad: u8, block_size: usize) {
+    let mut postfix: Vec<u8> = vec![];
+
+    for _ in 0..(block_size - (data.len() % block_size)) {
+        postfix.push(pad);
+    }
+
+    data.append(&mut postfix);
+}
