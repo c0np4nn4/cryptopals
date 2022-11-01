@@ -19,5 +19,8 @@ fn chal_3() {
 
     println!("[set1/ch3] res: {:?}", pt);
 
-    assert_eq!("Cooking MC's like a pound of bacon", pt.as_str());
+    assert_eq!(
+        "Cooking MC's like a pound of bacon",
+        String::from_utf8(pt).unwrap()
+    );
 }

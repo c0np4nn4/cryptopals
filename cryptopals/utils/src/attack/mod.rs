@@ -12,12 +12,13 @@ pub mod padding_oracle_attack;
 
 pub struct SingleCharKeyAttackResult {
     pub key: char,
-    pub pt: String,
+    // pub pt: String,
+    pub pt: Vec<u8>,
     pub score: f64,
 }
 
 pub struct ArbSizedKeyAttackResult {
-    pub key: String,
+    pub key: Vec<u8>,
     pub pt: String,
     // pub score: f64,
 }
@@ -120,16 +121,16 @@ pub fn single_char_key_attack(ct: Vec<u8>) -> Result<SingleCharKeyAttackResult, 
 
     let pt: Vec<u8> = ct.iter().map(|ct_byte| ct_byte ^ key as u8).collect();
 
-    let pt: String = match String::from_utf8(pt) {
-        Ok(pt) => pt,
-        Err(err) => {
-            println!(
-                "Failed to convert u8 to string, from_utf8(), err: {:?}",
-                err
-            );
-            String::default()
-        }
-    };
+    // let pt: String = match String::from_utf8(pt) {
+    //     Ok(pt) => pt,
+    //     Err(err) => {
+    //         println!(
+    //             "Failed to convert u8 to string, from_utf8(), err: {:?}",
+    //             err
+    //         );
+    //         String::default()
+    //     }
+    // };
 
     Ok(SingleCharKeyAttackResult { key, pt, score })
 }
@@ -189,8 +190,9 @@ pub fn break_arbitrary_size_repeating_key_xor_cipher(
         chunk.push(byte.clone());
     }
 
-    let mut pt_chunks: HashMap<usize, String> = HashMap::<usize, String>::new();
-    let mut rec_key: String = String::default();
+    // let mut pt_chunks: HashMap<usize, String> = HashMap::<usize, String>::new();
+    let mut pt_chunks: HashMap<usize, Vec<u8>> = HashMap::<usize, Vec<u8>>::new();
+    let mut rec_key: Vec<u8> = vec![];
 
     for idx in 0..key_size {
         let ct = chunks.get(&idx).ok_or("expect to get ciphertext chunk")?;
@@ -198,17 +200,18 @@ pub fn break_arbitrary_size_repeating_key_xor_cipher(
         let SingleCharKeyAttackResult { pt, key, .. } = single_char_key_attack(ct.clone())?;
 
         pt_chunks.insert(idx, pt);
-        rec_key.push(key);
+        rec_key.push(key as u8);
     }
 
     let mut pt: String = String::default();
+
     for idx in 0..ct.len() {
         let chunk_idx = &idx.rem_euclid(key_size);
 
         let pt_chunk = pt_chunks
             .get(chunk_idx)
             .ok_or("expect to get plaintext chunk")?
-            .as_bytes()
+            // .as_bytes()
             .to_vec();
 
         pt.push(pt_chunk[idx / key_size] as char);

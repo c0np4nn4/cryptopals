@@ -16,7 +16,7 @@ fn chal_4() {
 
     let ct_candidates: Vec<String> = ct_candidates.split('\n').map(|ct| ct.to_string()).collect();
 
-    let mut attack_result = HashMap::<String, f64>::new();
+    let mut attack_result = HashMap::<Vec<u8>, f64>::new();
 
     for ct in ct_candidates {
         let ct = decode_hex(ct).unwrap();
@@ -35,5 +35,8 @@ fn chal_4() {
 
     println!("[set1/ch4] res: {:?}", pt);
 
-    assert_eq!("Now that the party is jumping\n", pt);
+    assert_eq!(
+        "Now that the party is jumping\n",
+        String::from_utf8(pt.clone()).unwrap()
+    );
 }

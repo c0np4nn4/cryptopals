@@ -1,15 +1,11 @@
-use std::fs;
-
 use rand::Rng;
+use std::fs;
 use utils::{
     attack::{single_char_key_attack, SingleCharKeyAttackResult},
     base64::base64_dec,
     crypto::aes::BLOCK_SIZE,
     oracles::Oracle19,
-    padding::{
-        append_byte,
-        pkcs7::{pkcs7, trim_pkcs7},
-    },
+    padding::pkcs7::trim_pkcs7,
     xor::fixed_xor,
 };
 
