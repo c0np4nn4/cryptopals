@@ -21,7 +21,9 @@ impl Oracle19 {
     pub fn encrypt(&self, data: Vec<u8>) -> Vec<u8> {
         let mut data = data;
 
-        pkcs7(&mut data, BLOCK_SIZE);
+        if data.len() % 16 != 0 {
+            pkcs7(&mut data, BLOCK_SIZE);
+        }
 
         encrypt_ctr(self.key.to_vec(), data, self.nonce.clone()).unwrap()
     }

@@ -47,19 +47,23 @@ fn chal_20() {
     }
 
     for c in ct.iter_mut() {
-        *c = c[0..min_len].to_vec();
+        // unsafe
+        c.truncate(min_len);
     }
+
+    println!("min_len: {:?}", min_len);
 
     // extracting a key stream using the dummy plaintexts
     let key_stream: Vec<u8> = {
         let mut dummy_ct: Vec<u8> = vec![];
 
-        for _ in 0..50 {
-            dummy_ct.append(&mut oracle.encrypt(get_dummy_pt(min_len)));
+        for _ in 0..4096 {
+            let mut a = oracle.encrypt(get_dummy_pt(min_len));
+            dummy_ct.append(&mut a);
         }
 
         let ArbSizedKeyAttackResult { pt, key } =
-            break_arbitrary_size_repeating_key_xor_cipher(16, 16, dummy_ct).unwrap();
+            break_arbitrary_size_repeating_key_xor_cipher(1, min_len as u64, dummy_ct).unwrap();
 
         println!("key len: {:?}", key.len());
 
@@ -67,12 +71,7 @@ fn chal_20() {
     };
 
     for c in ct.clone() {
-        println!("c len: {:?}", c.len());
-        let mut k: Vec<u8> = vec![];
-
-        for _ in 0..(c.len() / BLOCK_SIZE) {
-            k.append(&mut key_stream.clone());
-        }
+        let k = key_stream.clone();
 
         let pt = fixed_xor(c, k).unwrap();
 
