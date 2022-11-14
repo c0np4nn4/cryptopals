@@ -8,5 +8,8 @@ utils = { path = "../utils" }
 aes = "0.8.1"
 rand = "0.8.5"
 
+[dev-dependencies]
+mersenne_twister = "1.1.1"
+
 [lib]
 doctest = true
