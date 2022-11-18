@@ -1,12 +1,15 @@
-use utils::rng::{gen_rand, seed_rand, MTRand};
+use utils::crypto::mt19937::MT19937;
 
 #[test]
 fn chal_21() {
-    let seed: u64 = 0x1337;
+    let seed: u64 = 5489;
 
-    let mut mt_rand: MTRand = seed_rand(seed);
+    let rng = MT19937::new(seed);
+    println!("rand: {:?}", rng.state);
 
-    let rand = gen_rand(&mut mt_rand);
+    let rrng_32 = mersenne_twister::MT19937::new_unseeded();
+    println!("rand 32: {:?}", rrng_32);
 
-    println!("rand: {:?}", rand);
+    // let rrng_64 = mersenne_twister::MT19937_64::new_unseeded();
+    // println!("rand 64: {:?}", rrng_64);
 }
