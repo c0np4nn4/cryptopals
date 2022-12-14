@@ -4,7 +4,6 @@ use rand::Rng;
 use utils::{
     attack::{break_arbitrary_size_repeating_key_xor_cipher, ArbSizedKeyAttackResult},
     base64::base64_dec,
-    crypto::aes::BLOCK_SIZE,
     oracles::Oracle19,
     xor::fixed_xor,
 };
@@ -62,7 +61,7 @@ fn chal_20() {
             dummy_ct.append(&mut a);
         }
 
-        let ArbSizedKeyAttackResult { pt, key } =
+        let ArbSizedKeyAttackResult { pt: _pt, key } =
             break_arbitrary_size_repeating_key_xor_cipher(1, min_len as u64, dummy_ct).unwrap();
 
         println!("key len: {:?}", key.len());

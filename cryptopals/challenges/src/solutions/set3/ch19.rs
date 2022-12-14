@@ -90,7 +90,7 @@ fn get_key_stream(ct: Vec<Vec<u8>>, len: usize) -> Vec<u8> {
             }
         }
 
-        let SingleCharKeyAttackResult { key, score, .. } =
+        let SingleCharKeyAttackResult { key, score: _score, .. } =
             single_char_key_attack(col_bit_stream).unwrap();
 
         key_stream.push(key as u8);
