@@ -7,9 +7,6 @@ edition = "2021"
 utils = { path = "../utils" }
 challenges = { path = "../challenges" }
 
-aes = "0.8.1"
-rand = "0.8.5"
-
 [[bin]]
 name = "main"
 path = "./main.rs"

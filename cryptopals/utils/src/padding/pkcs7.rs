@@ -1,6 +1,6 @@
 use std::convert::TryInto;
 
-use crate::BoxedError;
+use super::PaddingError;
 
 pub fn pkcs7(data: &mut Vec<u8>, block_size: usize) {
     let pad = block_size - (data.len() % block_size);
@@ -40,7 +40,7 @@ pub fn verify_pkcs7(data: &mut Vec<u8>, block_size: usize) -> bool {
     }
 }
 
-pub fn trim_pkcs7(data: &mut Vec<u8>, block_size: usize) -> Result<(), BoxedError> {
+pub fn trim_pkcs7(data: &mut Vec<u8>, block_size: usize) -> Result<(), PaddingError> {
     if verify_pkcs7(data, block_size) {
         let last_block: Vec<u8> = data[data.len() - block_size..data.len()]
             .try_into()

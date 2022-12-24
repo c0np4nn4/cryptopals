@@ -1,6 +1,8 @@
-use crate::BoxedError;
+use std::error::Error;
 
-pub fn decode_hex(mut data: String) -> Result<Vec<u8>, BoxedError> {
+pub type TypeError = Box<dyn Error>;
+
+pub fn decode_hex(mut data: String) -> Result<Vec<u8>, TypeError> {
     if data.is_empty() {
         return Err(format!("data should be exist").into());
     }
@@ -26,7 +28,7 @@ pub fn decode_hex(mut data: String) -> Result<Vec<u8>, BoxedError> {
     Ok(res)
 }
 
-pub fn u8_vec_to_hex_string(data: Vec<u8>) -> Result<String, BoxedError> {
+pub fn u8_vec_to_hex_string(data: Vec<u8>) -> Result<String, TypeError> {
     if data.is_empty() {
         return Err(format!("data should be exist").into());
     }

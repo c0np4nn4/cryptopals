@@ -1,10 +1,9 @@
-use crate::{types, BoxedError};
+use crate::types;
+use std::error::Error;
 
-pub fn fixed_xor(l: Vec<u8>, r: Vec<u8>) -> Result<Vec<u8>, BoxedError> {
-    // let l = casting::hex_string_to_u8_vec(l)?;
+pub type XorError = Box<dyn Error>;
 
-    // let r = casting::hex_string_to_u8_vec(r)?;
-
+pub fn fixed_xor(l: Vec<u8>, r: Vec<u8>) -> Result<Vec<u8>, XorError> {
     if l.len() != r.len() {
         return Err(format!("length is different, {} and {}", l.len(), r.len()).into());
     }
@@ -18,7 +17,7 @@ pub fn fixed_xor(l: Vec<u8>, r: Vec<u8>) -> Result<Vec<u8>, BoxedError> {
     Ok(res)
 }
 
-pub fn fixed_xor_word(l: [u8; 4], r: [u8; 4]) -> Result<[u8; 4], BoxedError> {
+pub fn fixed_xor_word(l: [u8; 4], r: [u8; 4]) -> Result<[u8; 4], XorError> {
     let mut res = [0u8; 4];
 
     for idx in 0..l.len() {
@@ -28,7 +27,7 @@ pub fn fixed_xor_word(l: [u8; 4], r: [u8; 4]) -> Result<[u8; 4], BoxedError> {
     Ok(res)
 }
 
-pub fn repeating_key_xor(pt: String, key: String) -> Result<String, BoxedError> {
+pub fn repeating_key_xor(pt: String, key: String) -> Result<String, XorError> {
     let pt = pt.as_bytes();
 
     let key = key.as_bytes();

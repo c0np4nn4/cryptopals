@@ -2,7 +2,7 @@ use utils::{attack::padding_oracle_attack::padding_oracle_attack, oracles::Oracl
 
 #[test]
 fn chal_17() {
-    let oracle = Oracle17::new();
+    let oracle = Oracle17::new().unwrap();
 
     let ct = oracle.ciphertext.clone();
     let iv = oracle.iv.clone();

@@ -8,7 +8,7 @@ fn get_prefix_size(oracle: &mut Oracle14) -> usize {
     loop {
         dummy_chunk.push('A' as u8);
 
-        let tmp = oracle.encrypt(dummy_chunk.clone());
+        let tmp = oracle.encrypt(dummy_chunk.clone()).unwrap();
 
         let mut chunk_1 = [0u8; 16];
         let mut chunk_2 = [0u8; 16];
@@ -44,7 +44,7 @@ fn make_rainbow_table(oracle: &mut Oracle14, data: Vec<u8>, idx: usize) -> HashM
 
         let data = rainbow_tmp;
 
-        let tmp = oracle.encrypt(data);
+        let tmp = oracle.encrypt(data).unwrap();
 
         let mut chunk = [0u8; 16];
         for i in 0..16 {
@@ -63,7 +63,7 @@ fn make_rainbow_table(oracle: &mut Oracle14, data: Vec<u8>, idx: usize) -> HashM
 fn chal_14() {
     let mut oracle = Oracle14::new();
 
-    let ciphertext = oracle.encrypt(vec![]);
+    let ciphertext = oracle.encrypt(vec![]).unwrap();
 
     let prefix_len = get_prefix_size(&mut oracle);
 
@@ -103,7 +103,7 @@ fn chal_14() {
             let mut dummy_clone = dummy.clone();
             dummy_clone.append(&mut pad);
 
-            let res = oracle.encrypt(dummy_clone);
+            let res = oracle.encrypt(dummy_clone).unwrap();
 
             let mut dummy_clone = dummy.clone();
             dummy_clone.append(&mut data_queue.clone());

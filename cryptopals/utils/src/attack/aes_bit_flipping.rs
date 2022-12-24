@@ -1,12 +1,14 @@
 use crate::{crypto::aes::BLOCK_SIZE, oracles::Oracle16};
 
+use super::AttackError;
+
 pub fn bit_flipping_attack(
     // ct: &mut Vec<u8>,
     // pt: Vec<u8>,
     oracle: &Oracle16,
     target_data: &str,
     _delimiter: char, //
-) -> Vec<u8> {
+) -> Result<Vec<u8>, AttackError> {
     assert_eq!(target_data.len() <= 16, true);
 
     // assert_eq!(delimiter, delimiter);
@@ -28,7 +30,7 @@ pub fn bit_flipping_attack(
 
     // println!("dummy_size: {:?}", dummy.len());
 
-    let mut ct = oracle.encrypt(dummy);
+    let mut ct = oracle.encrypt(dummy)?;
 
     // {
     //     println!("\n[!] ciphertext: (len:{})", ct.len());
@@ -108,5 +110,5 @@ pub fn bit_flipping_attack(
     //     }
     // }
 
-    ct
+    Ok(ct)
 }

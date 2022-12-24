@@ -17,7 +17,9 @@ fn chal_3() {
 
     let SingleCharKeyAttackResult { pt, .. } = single_char_key_attack(ct).unwrap();
 
-    println!("[set1/ch3] res: {:?}", pt);
+    println!("[set1/ch3] res: {:?}", 
+        String::from_utf8(pt.clone().into_iter().map(|c| c).collect()).unwrap()
+    );
 
     assert_eq!(
         "Cooking MC's like a pound of bacon",

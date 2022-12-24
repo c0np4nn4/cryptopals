@@ -2,6 +2,8 @@ use rand::Rng;
 
 use crate::crypto::aes::{self, encrypt_ecb, get_random_aes_key, get_random_data};
 
+use super::OracleError;
+
 pub struct Oracle14 {
     key: [u8; 16],
     random_prefix: Vec<u8>,
@@ -18,7 +20,7 @@ impl Oracle14 {
         Oracle14 { key, random_prefix }
     }
 
-    pub fn encrypt(&mut self, mut input_data: Vec<u8>) -> Vec<u8> {
+    pub fn encrypt(&mut self, mut input_data: Vec<u8>) -> Result<Vec<u8>, OracleError> {
         // prefix + input + target
         let mut msg = aes::get_dummy_data();
 

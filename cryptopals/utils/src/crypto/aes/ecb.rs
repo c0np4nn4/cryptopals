@@ -1,55 +1,47 @@
 use std::convert::TryInto;
 
-use aes::cipher::{generic_array::GenericArray, KeyInit};
-use aes::cipher::{BlockDecrypt, BlockEncrypt};
-use aes::Aes128;
 use lazy_static::lazy_static;
 
+use crate::crypto::CryptoError;
+use crate::crypto::aes_core::AES;
+use crate::crypto::aes_core::key::from_vec;
 use crate::padding::pkcs7::pkcs7;
 use crate::xor::fixed_xor;
 
 use super::BLOCK_SIZE;
 
-pub fn encrypt_ecb(key: Vec<u8>, data: &mut Vec<u8>) -> Vec<u8> {
+pub fn encrypt_ecb(key: Vec<u8>, data: &mut Vec<u8>) -> Result<Vec<u8>, CryptoError> {
     pkcs7(data, BLOCK_SIZE);
 
-    let key = GenericArray::from_slice(&key);
-
-    let cipher = Aes128::new(&key);
+    let cipher = AES::new(from_vec(key)?);
 
     let mut res = Vec::new();
 
     for idx in (0..data.len()).step_by(16) {
-        let block: [u8; 16] = data[idx..idx + 16].try_into().unwrap();
+        let block = data[idx..idx + 16].to_vec();
 
-        let mut block = GenericArray::from_slice(&block).clone();
-
-        cipher.encrypt_block(&mut block);
+        let block = cipher.encrypt(block)?;
 
         res.append(&mut block.to_vec());
     }
 
-    res
+    Ok(res)
 }
 
-pub fn decrypt_ecb(key: Vec<u8>, data: Vec<u8>) -> Vec<u8> {
-    let key = GenericArray::from_slice(&key);
-
-    let cipher = Aes128::new(&key);
+pub fn decrypt_ecb(key: Vec<u8>, data: Vec<u8>) -> Result<Vec<u8>, CryptoError> {
+    let cipher = AES::new(from_vec(key)?);
 
     let mut res = Vec::new();
 
     for idx in (0..data.len()).step_by(16) {
-        let block: [u8; 16] = data[idx..idx + 16].try_into().unwrap();
+        let block = data[idx..idx + 16].to_vec();
 
-        let mut block = GenericArray::from_slice(&block).clone();
-
-        cipher.decrypt_block(&mut block);
+        let block = cipher.decrypt(block)?;
 
         res.append(&mut block.to_vec());
     }
 
-    res
+    Ok(res)
 }
 
 pub fn detect_ecb(data: Vec<u8>) -> Option<Vec<(usize, usize)>> {
@@ -122,26 +114,12 @@ lazy_static! {
     };
 }
 
-pub fn encrypt_ecb_with_unknown_key(data: &mut Vec<u8>) -> Vec<u8> {
+pub fn encrypt_ecb_with_unknown_key(data: &mut Vec<u8>) -> Result<Vec<u8>, CryptoError> {
     pkcs7(data, BLOCK_SIZE);
 
     let key = RANDOM_KEY.clone();
 
-    let key = GenericArray::from_slice(&key);
+    let res = encrypt_ecb(key.to_vec(), data)?;
 
-    let cipher = Aes128::new(&key);
-
-    let mut res = Vec::new();
-
-    for idx in (0..data.len()).step_by(16) {
-        let block: [u8; 16] = data[idx..idx + 16].try_into().unwrap();
-
-        let mut block = GenericArray::from_slice(&block).clone();
-
-        cipher.encrypt_block(&mut block);
-
-        res.append(&mut block.to_vec());
-    }
-
-    res
+    Ok(res)
 }

@@ -27,7 +27,7 @@ pub struct OracleResult {
 }
 
 impl Oracle17 {
-    pub fn new() -> Self {
+    pub fn new() -> Result<Self, OracleError> {
         let key = get_random_aes_key();
 
         let iv = get_random_aes_iv();
@@ -46,13 +46,15 @@ impl Oracle17 {
 
         // let mut flag = "YELLOW SUBMARINE".as_bytes().to_vec();
 
-        let ciphertext = encrypt_cbc(key.to_vec(), &mut flag, iv);
+        let ciphertext = encrypt_cbc(key.to_vec(), &mut flag, iv)?;
 
-        Oracle17 {
+        let oracle = Oracle17 {
             key,
             iv,
             ciphertext,
-        }
+        };
+
+        Ok(oracle)
     }
 
     pub fn verify_padding(

@@ -47,6 +47,23 @@ impl MT19937 {
         }
     }
 
+    pub fn new_with_state(input_state: &[u32]) -> Self {
+        assert_eq!(input_state.len(), N);
+
+        let idx: usize = 0;
+
+        let mut state:[u32; N] = [0; N];
+
+        for i in 0..N {
+            state[i] = input_state[i];
+        }
+
+        MT19937 {
+            state,
+            idx
+        }
+    }
+
     pub fn init(&mut self, seed: u32) {
         self.state[0] = seed;
 

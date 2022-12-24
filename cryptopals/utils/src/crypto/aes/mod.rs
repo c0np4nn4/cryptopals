@@ -8,11 +8,11 @@ pub use ecb::*;
 
 use rand::Rng;
 
-use crate::BoxedError;
+use super::CryptoError;
 
 pub const BLOCK_SIZE: usize = 16;
 
-pub fn into_aes_blocks(data: Vec<u8>) -> Result<Vec<[u8; 16]>, BoxedError> {
+pub fn into_aes_blocks(data: Vec<u8>) -> Result<Vec<[u8; 16]>, CryptoError> {
     if data.len() % 16 != 0 {
         return Err(format!(
             "AES block size should be '16', found data size: {}",
@@ -37,7 +37,7 @@ pub fn into_aes_blocks(data: Vec<u8>) -> Result<Vec<[u8; 16]>, BoxedError> {
         Ok(blocks)
     }
 }
-pub fn from_u64_little_endian(data: u64) -> Result<[u8; 8], BoxedError> {
+pub fn from_u64_little_endian(data: u64) -> Result<[u8; 8], CryptoError> {
     let mut res = [0u8; 8];
 
     let mut a = data;
@@ -51,7 +51,7 @@ pub fn from_u64_little_endian(data: u64) -> Result<[u8; 8], BoxedError> {
     Ok(res)
 }
 
-pub fn from_u64(data: u64) -> Result<[u8; 8], BoxedError> {
+pub fn from_u64(data: u64) -> Result<[u8; 8], CryptoError> {
     let mut res = [0u8; 8];
 
     let mut a = data;

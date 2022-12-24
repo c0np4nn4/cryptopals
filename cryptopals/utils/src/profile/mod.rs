@@ -2,9 +2,12 @@ use core::fmt;
 
 use crate::{
     crypto::aes::{decrypt_ecb, encrypt_ecb},
-    padding::pkcs7::trim_pkcs7,
-    BoxedError,
+    padding::{pkcs7::trim_pkcs7, PaddingError},
 };
+
+use std::error::Error;
+
+pub type ProfileError = Box<dyn Error>;
 
 #[cfg(test)]
 mod tests;
@@ -42,7 +45,7 @@ impl Profile {
         )
     }
 
-    pub fn parsing_profile(encoded_profile: String) -> Result<Profile, BoxedError> {
+    pub fn parsing_profile(encoded_profile: String) -> Result<Profile, ProfileError> {
         let mut profile = encoded_profile.split('&').collect::<Vec<&str>>();
 
         if profile.len() != 3 {
@@ -75,17 +78,17 @@ impl Profile {
     }
 
     // suppose that security key is managed by the person who had been created the profile
-    pub fn encrypt_aes(&self, key: Vec<u8>) -> Vec<u8> {
+    pub fn encrypt_aes(&self, key: Vec<u8>) -> Result<Vec<u8>, ProfileError> {
         encrypt_ecb(key, &mut self.encode().as_bytes().to_vec())
     }
 
-    pub fn decrypt_aes(key: Vec<u8>, encrypted_profile: Vec<u8>) -> Result<Profile, BoxedError> {
-        let mut res = decrypt_ecb(key, encrypted_profile);
+    pub fn decrypt_aes(key: Vec<u8>, encrypted_profile: Vec<u8>) -> Result<Profile, ProfileError> {
+        let mut res = decrypt_ecb(key, encrypted_profile)?;
 
-        trim_pkcs7(&mut res, 16).unwrap();
+        trim_pkcs7(&mut res, 16)?;
 
         // Profile::parsing_profile(res)
-        Profile::parsing_profile(String::from_utf8(res).unwrap())
+        Profile::parsing_profile(String::from_utf8(res)?)
     }
 }
 
@@ -105,7 +108,7 @@ fn check_email_address_validity(email_address: &String) -> bool {
     true
 }
 
-pub fn profile_for(email_address: String) -> Result<Profile, BoxedError> {
+pub fn profile_for(email_address: String) -> Result<Profile, PaddingError> {
     if !check_email_address_validity(&email_address) {
         return Err(format!("Invalid character has been found in parameter",).into());
     }

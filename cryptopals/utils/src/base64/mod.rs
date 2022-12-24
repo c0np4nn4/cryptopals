@@ -88,11 +88,8 @@ pub fn base64_enc(data: String) -> Result<String, BoxedError> {
 
     let res = match data.len() % 3 {
         0 => padding_0_byte(data)?,
-
         1 => padding_2_byte(data)?,
-
         2 => padding_1_byte(data)?,
-
         _ => {
             return Err(format!("Unexpected result from data.len() % 3").into());
         }
@@ -130,7 +127,6 @@ fn _base_64_enc(data: Vec<u8>) -> String {
 pub fn base64_dec(data: String) -> Result<Vec<u8>, BoxedError> {
     let base64_table = Base64Table::new();
 
-    // let data: Vec<u8> = types::string_to_u8_vec(data)?;
     let data: Vec<u8> = data.as_bytes().to_vec();
 
     let mut data_decrypted: Vec<u8> = Vec::new();
@@ -144,8 +140,6 @@ pub fn base64_dec(data: String) -> Result<Vec<u8>, BoxedError> {
         word_dec.push(base64_table.get_index(&(word[1] as char))?);
         word_dec.push(base64_table.get_index(&(word[2] as char))?);
         word_dec.push(base64_table.get_index(&(word[3] as char))?);
-
-        // println!("{:?}", word_dec);
 
         data_decrypted.push((word_dec[0] << 2) | (word_dec[1] >> 4));
         data_decrypted.push((word_dec[1] << 4) | (word_dec[2] >> 2));

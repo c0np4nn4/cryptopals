@@ -1,7 +1,22 @@
-use super::{encrypt::SUB_BYTES_TABLE, AES};
-use crate::{xor::fixed_xor_word, BoxedError};
+use super::{AES, encrypt::sub_bytes::SUB_BYTES_TABLE};
+use crate::{xor::fixed_xor_word, crypto::CryptoError};
 
 pub type RoundKey = [u8; 16];
+pub type AesKey = [u8; 16];
+
+pub fn from_vec(key: Vec<u8>) -> Result<AesKey, CryptoError> {
+    if !key.len().eq(&16) {
+        return Err(format!("The length of the input vector should be 16").into());
+    }
+
+    let mut res: [u8; 16] = [0; 16];
+
+    for idx in 0..16 {
+        res[idx] = key[idx].clone();
+    }
+
+    Ok(res)
+}
 
 const RCON: [[u8; 4]; 10] = [
     [0x01, 0x00, 0x00, 0x00],
@@ -17,7 +32,7 @@ const RCON: [[u8; 4]; 10] = [
 ];
 
 impl AES {
-    pub fn key_expansion(&self) -> Result<[RoundKey; 11], BoxedError> {
+    pub fn key_expansion(&self) -> Result<[RoundKey; 11], CryptoError> {
         //
         let key = self.key;
 
@@ -81,7 +96,7 @@ impl AES {
     }
 }
 
-fn sub_word(word: [u8; 4]) -> Result<[u8; 4], BoxedError> {
+fn sub_word(word: [u8; 4]) -> Result<[u8; 4], CryptoError> {
     let mut res_word = [0u8; 4];
 
     for idx in 0..4 {
@@ -91,7 +106,7 @@ fn sub_word(word: [u8; 4]) -> Result<[u8; 4], BoxedError> {
     Ok(res_word)
 }
 
-fn rot_word_1_right(word: [u8; 4]) -> Result<[u8; 4], BoxedError> {
+fn rot_word_1_right(word: [u8; 4]) -> Result<[u8; 4], CryptoError> {
     let mut res = [0u8; 4];
 
     res[0] = word[1].clone();

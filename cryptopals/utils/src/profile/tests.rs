@@ -22,7 +22,7 @@ pub fn test_profile_with_aes() {
 
     let key = get_random_aes_key();
 
-    let encrypted_profile = profile.encrypt_aes(key.to_vec());
+    let encrypted_profile = profile.encrypt_aes(key.to_vec()).unwrap();
 
     let res = Profile::decrypt_aes(key.to_vec(), encrypted_profile).unwrap();
 

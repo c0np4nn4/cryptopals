@@ -1,7 +1,6 @@
 use std::fs;
-
 use utils::base64::base64_dec;
-use utils::crypto::aes;
+use utils::crypto::aes::decrypt_ecb;
 
 #[test]
 fn chal_7() {
@@ -14,7 +13,7 @@ fn chal_7() {
 
     let data = base64_dec(data).unwrap();
 
-    let res = aes::decrypt_ecb(key.as_bytes().to_vec(), data);
+    let res = decrypt_ecb(key.as_bytes().to_vec(), data).unwrap();
 
     let res: String = res.into_iter().map(|byte| byte as char).collect();
 

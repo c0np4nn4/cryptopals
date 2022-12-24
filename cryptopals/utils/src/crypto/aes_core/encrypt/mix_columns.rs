@@ -59,11 +59,18 @@ impl AES {
         Ok(res)
     }
 
-    fn xtime(&self, x: u8, byte: u8) -> Result<u8, BoxedError> {
+    pub fn xtime(&self, x: u8, byte: u8) -> Result<u8, BoxedError> {
         let res = match x {
+            // enc
             1 => self.xtime_1(byte)?,
             2 => self.xtime_2(byte)?,
             3 => self.xtime_3(byte)?,
+            // dec
+            9 => self.xtime_9(byte)?,
+            0xB => self.xtime_b(byte)?,
+            0xD => self.xtime_d(byte)?,
+            0xE => self.xtime_e(byte)?,
+            //
             _ => {
                 return Err(format!("Not implemented yet").into());
             }
@@ -97,7 +104,76 @@ impl AES {
         Ok(res)
     }
 
-    fn addition(&self, l: u8, r: u8) -> Result<u8, BoxedError> {
+    #[inline]
+    fn xtime_4(&self, byte: u8) -> Result<u8, BoxedError> {
+        let val = self.xtime_2(byte)?;
+
+        let res = self.xtime_2(val)?;
+
+        Ok(res)
+    }
+
+
+    pub fn addition(&self, l: u8, r: u8) -> Result<u8, BoxedError> {
         Ok(l ^ r)
+    }
+
+    #[inline]
+    fn xtime_8(&self, byte:u8) -> Result<u8, BoxedError> {
+        let val_1 = self.xtime_2(byte)?;
+
+        let val_2 = self.xtime_2(val_1)?;
+
+        let val_3 = self.xtime_2(val_2)?;
+
+        Ok(val_3)
+    }
+
+    #[inline]
+    fn xtime_9(&self, byte: u8) -> Result<u8, BoxedError> {
+        let val_1 = self.xtime_8(byte)?;
+
+        let res = self.addition(val_1, byte)?;
+
+        Ok(res)
+    }
+
+    #[inline]
+    fn xtime_b(&self, byte: u8) -> Result<u8, BoxedError> {
+        let val_1 = self.xtime_8(byte)?;
+
+        let val_2 = self.xtime_2(byte)?;
+
+        let val_3 = self.addition(val_1, val_2)?;
+
+        let res = self.addition(val_3, byte)?;
+
+        Ok(res)
+    }
+
+    #[inline]
+    fn xtime_d(&self, byte: u8) -> Result<u8, BoxedError> {
+        let val_1 = self.xtime_8(byte)?;
+
+        let val_2 = self.xtime_4(byte)?;
+
+        let val_3 = self.addition(val_1, val_2)?;
+
+        let res = self.addition(val_3, byte)?;
+
+        Ok(res)
+    }
+
+    #[inline]
+    fn xtime_e(&self, byte: u8) -> Result<u8, BoxedError> {
+        let val_1 = self.xtime_8(byte)?;
+
+        let val_2 = self.xtime_4(byte)?;
+
+        let val_3 = self.addition(val_1, val_2)?;
+
+        let res = self.addition(val_3, self.xtime_2(byte)?)?;
+
+        Ok(res)
     }
 }

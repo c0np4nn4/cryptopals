@@ -1,9 +1,13 @@
+pub mod aes_bit_flipping;
+pub mod padding_oracle_attack;
+pub mod mt19937_untempering;
+
 use crate::{hamming_distance::get_hamming_distance, BoxedError};
 use lazy_static::lazy_static;
 use std::{char, collections::HashMap};
+use std::error::Error;
 
-pub mod aes_bit_flipping;
-pub mod padding_oracle_attack;
+pub type AttackError = Box<dyn Error>;
 
 // ref
 // LETTER_FREQ_TABLE
@@ -77,11 +81,14 @@ fn is_space(c: char) -> bool {
 }
 
 pub fn single_char_key_attack(ct: Vec<u8>) -> Result<SingleCharKeyAttackResult, BoxedError> {
-    let mut score_table = HashMap::<u8, f64>::new();
+    type KeyCandidate = u8;
+    type Score = f64;
+
+    let mut score_table = HashMap::<KeyCandidate,Score>::new();
 
     // finding key based on the score calculated by the frequency attack
     for key_candidate in 0..255 {
-        let mut score: f64 = 0.0;
+        let mut score: Score = 0.0;
 
         for byte in ct.iter() {
             let c = (byte ^ key_candidate) as char;

@@ -29,7 +29,7 @@ impl Oracle16 {
         }
     }
 
-    pub fn encrypt(&self, mut input_data: Vec<u8>) -> Vec<u8> {
+    pub fn encrypt(&self, mut input_data: Vec<u8>) -> Result<Vec<u8>, OracleError> {
         // if input_data.contains(";admin=true;".as_bytes().to_vec()) {
         //     panic!()
         // }

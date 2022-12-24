@@ -1,6 +1,10 @@
-use rand::Rng;
-
 pub mod pkcs7;
+
+use rand::Rng;
+use std::error::Error;
+
+pub type PaddingError = Box<dyn Error>;
+
 
 pub fn prepend_rand_bytes(data: &mut Vec<u8>, min: usize, max: usize) {
     // let pre_count: usize = rand::random::<usize>() % len;

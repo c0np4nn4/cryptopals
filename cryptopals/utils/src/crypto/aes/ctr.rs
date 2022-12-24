@@ -1,20 +1,14 @@
-use super::{from_u64, into_aes_blocks};
-use crate::{crypto::aes::from_u64_little_endian, xor::fixed_xor, BoxedError};
-use aes::{
-    cipher::{generic_array::GenericArray, BlockEncrypt, KeyInit},
-    Aes128,
-};
+use super::into_aes_blocks;
+use crate::{crypto::{aes::from_u64_little_endian, CryptoError, aes_core::{key::from_vec, AES}}, xor::fixed_xor};
 
-pub fn decrypt_ctr(key: Vec<u8>, data: Vec<u8>, nonce: [u8; 8]) -> Result<Vec<u8>, BoxedError> {
+pub fn decrypt_ctr(key: Vec<u8>, data: Vec<u8>, nonce: [u8; 8]) -> Result<Vec<u8>, CryptoError> {
     encrypt_ctr(key, data, nonce)
 }
 
-pub fn encrypt_ctr(key: Vec<u8>, data: Vec<u8>, nonce: [u8; 8]) -> Result<Vec<u8>, BoxedError> {
+pub fn encrypt_ctr(key: Vec<u8>, data: Vec<u8>, nonce: [u8; 8]) -> Result<Vec<u8>, CryptoError> {
     let mut res = Vec::<u8>::new();
 
-    let key = GenericArray::from_slice(&key);
-
-    let cipher = Aes128::new(&key);
+    let cipher = AES::new(from_vec(key)?);
 
     let blocks = into_aes_blocks(data)?;
 
@@ -30,11 +24,9 @@ pub fn encrypt_ctr(key: Vec<u8>, data: Vec<u8>, nonce: [u8; 8]) -> Result<Vec<u8
 
         let ctr: [u8; 16] = nonce_vec[0..16].try_into().unwrap();
 
-        let mut ctr = GenericArray::from_slice(&ctr).clone();
+        let ctr = cipher.encrypt(ctr.to_vec())?;
 
-        cipher.encrypt_block(&mut ctr);
-
-        res.append(&mut fixed_xor(ctr.to_vec(), blocks[counter].to_vec())?);
+        res.append(&mut fixed_xor(ctr, blocks[counter].to_vec())?);
     }
 
     Ok(res)

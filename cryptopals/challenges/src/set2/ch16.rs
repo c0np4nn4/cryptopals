@@ -8,7 +8,7 @@ fn chal_16() {
 
     let delimiter: char = ';';
 
-    let payload = bit_flipping_attack(&oracle, inject_data, delimiter);
+    let payload = bit_flipping_attack(&oracle, inject_data, delimiter).unwrap();
 
     let res = oracle.try_to_access_as_admin(payload).unwrap();
 

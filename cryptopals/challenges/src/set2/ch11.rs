@@ -32,10 +32,10 @@ fn foo() {
 
         let iv = get_random_aes_iv();
 
-        res = encrypt_cbc(key.to_vec(), &mut data, iv);
+        res = encrypt_cbc(key.to_vec(), &mut data, iv).unwrap();
     } else {
         println!("Encrypt in ECB(Electronic Code Block) mode");
-        res = encrypt_ecb(key.to_vec(), &mut data);
+        res = encrypt_ecb(key.to_vec(), &mut data).unwrap();
     }
 
     let prob_ecb = detect_ecb_probability(res);
