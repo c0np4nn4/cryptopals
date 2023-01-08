@@ -1,7 +1,7 @@
-use crate::crypto::aes_core::{state::State, AES};
+use crate::crypto::{aes_core::{state::State, AES}, CryptoError};
 
 impl AES {
-    pub(crate) fn shift_rows(&self, prev_state: State) -> State {
+    pub(crate) fn shift_rows(&self, prev_state: State) -> Result<State, CryptoError> {
         let mut next_state = State::default();
 
         // col 1
@@ -28,6 +28,6 @@ impl AES {
         next_state[0xe] = prev_state[0x6];
         next_state[0xf] = prev_state[0xb];
 
-        next_state
+        Ok(next_state)
     }
 }

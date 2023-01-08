@@ -1,4 +1,4 @@
-use crate::crypto::aes_core::{state::State, AES};
+use crate::crypto::{aes_core::{state::State, AES}, CryptoError};
 
 pub const INV_SUB_BYTES_TABLE: [u8; 256] = [
     0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb,
@@ -20,13 +20,13 @@ pub const INV_SUB_BYTES_TABLE: [u8; 256] = [
 ];
 
 impl AES {
-    pub(crate) fn inv_sub_bytes(&self, prev_state: State) -> State {
+    pub(crate) fn inv_sub_bytes(&self, prev_state: State) -> Result<State, CryptoError> {
         let mut next_state = State::default();
 
         for idx in 0..16 {
             next_state[idx] = INV_SUB_BYTES_TABLE[prev_state[idx] as usize];
         }
 
-        next_state
+        Ok(next_state)
     }
 }

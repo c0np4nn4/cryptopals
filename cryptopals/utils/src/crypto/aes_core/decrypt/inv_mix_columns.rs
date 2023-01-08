@@ -1,10 +1,4 @@
-use crate::{
-    crypto::aes_core::{
-        state::{get_columns, State},
-        AES,
-    },
-    BoxedError,
-};
+use crate::crypto::{aes_core::{AES, state::{State, get_columns}}, CryptoError};
 
 const INV_MIX_COLUMNS_MATRIX: [u8; 16] = [
     0x0E, 0x0B, 0x0D, 0x09,
@@ -14,7 +8,7 @@ const INV_MIX_COLUMNS_MATRIX: [u8; 16] = [
 ];
 
 impl AES {
-    pub(crate) fn inv_mix_columns(&self, prev_state: State) -> Result<State, BoxedError> {
+    pub(crate) fn inv_mix_columns(&self, prev_state: State) -> Result<State, CryptoError> {
         let state_columns = get_columns(prev_state);
 
         let mut res: State = State::default();

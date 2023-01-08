@@ -1,10 +1,4 @@
-use crate::{
-    crypto::aes_core::{
-        state::{get_columns, State},
-        AES,
-    },
-    BoxedError,
-};
+use crate::crypto::{aes_core::{AES, state::{State, get_columns}}, CryptoError};
 
 const MIX_COLUMNS_MATRIX: [u8; 16] = [
     0x02, 0x03, 0x01, 0x01, //
@@ -14,7 +8,7 @@ const MIX_COLUMNS_MATRIX: [u8; 16] = [
 ];
 
 impl AES {
-    pub(crate) fn mix_columns(&self, prev_state: State) -> Result<State, BoxedError> {
+    pub(crate) fn mix_columns(&self, prev_state: State) -> Result<State, CryptoError> {
         let state_columns = get_columns(prev_state);
 
         let mut res: State = State::default();
@@ -59,7 +53,7 @@ impl AES {
         Ok(res)
     }
 
-    pub fn xtime(&self, x: u8, byte: u8) -> Result<u8, BoxedError> {
+    pub fn xtime(&self, x: u8, byte: u8) -> Result<u8, CryptoError> {
         let res = match x {
             // enc
             1 => self.xtime_1(byte)?,
@@ -80,12 +74,12 @@ impl AES {
     }
 
     #[inline]
-    fn xtime_1(&self, byte: u8) -> Result<u8, BoxedError> {
+    fn xtime_1(&self, byte: u8) -> Result<u8, CryptoError> {
         Ok(byte)
     }
 
     #[inline]
-    fn xtime_2(&self, byte: u8) -> Result<u8, BoxedError> {
+    fn xtime_2(&self, byte: u8) -> Result<u8, CryptoError> {
         let mut res = byte;
 
         if res & 0x80 == 0x80 {
@@ -98,14 +92,14 @@ impl AES {
     }
 
     #[inline]
-    fn xtime_3(&self, byte: u8) -> Result<u8, BoxedError> {
+    fn xtime_3(&self, byte: u8) -> Result<u8, CryptoError> {
         let res = self.addition(self.xtime_2(byte)?, self.xtime_1(byte)?)?;
 
         Ok(res)
     }
 
     #[inline]
-    fn xtime_4(&self, byte: u8) -> Result<u8, BoxedError> {
+    fn xtime_4(&self, byte: u8) -> Result<u8, CryptoError> {
         let val = self.xtime_2(byte)?;
 
         let res = self.xtime_2(val)?;
@@ -114,12 +108,12 @@ impl AES {
     }
 
 
-    pub fn addition(&self, l: u8, r: u8) -> Result<u8, BoxedError> {
+    pub fn addition(&self, l: u8, r: u8) -> Result<u8, CryptoError> {
         Ok(l ^ r)
     }
 
     #[inline]
-    fn xtime_8(&self, byte:u8) -> Result<u8, BoxedError> {
+    fn xtime_8(&self, byte:u8) -> Result<u8, CryptoError> {
         let val_1 = self.xtime_2(byte)?;
 
         let val_2 = self.xtime_2(val_1)?;
@@ -130,7 +124,7 @@ impl AES {
     }
 
     #[inline]
-    fn xtime_9(&self, byte: u8) -> Result<u8, BoxedError> {
+    fn xtime_9(&self, byte: u8) -> Result<u8, CryptoError> {
         let val_1 = self.xtime_8(byte)?;
 
         let res = self.addition(val_1, byte)?;
@@ -139,7 +133,7 @@ impl AES {
     }
 
     #[inline]
-    fn xtime_b(&self, byte: u8) -> Result<u8, BoxedError> {
+    fn xtime_b(&self, byte: u8) -> Result<u8, CryptoError> {
         let val_1 = self.xtime_8(byte)?;
 
         let val_2 = self.xtime_2(byte)?;
@@ -152,7 +146,7 @@ impl AES {
     }
 
     #[inline]
-    fn xtime_d(&self, byte: u8) -> Result<u8, BoxedError> {
+    fn xtime_d(&self, byte: u8) -> Result<u8, CryptoError> {
         let val_1 = self.xtime_8(byte)?;
 
         let val_2 = self.xtime_4(byte)?;
@@ -165,7 +159,7 @@ impl AES {
     }
 
     #[inline]
-    fn xtime_e(&self, byte: u8) -> Result<u8, BoxedError> {
+    fn xtime_e(&self, byte: u8) -> Result<u8, CryptoError> {
         let val_1 = self.xtime_8(byte)?;
 
         let val_2 = self.xtime_4(byte)?;

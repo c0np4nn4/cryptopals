@@ -23,10 +23,10 @@ impl AES {
         // round 1 ~ 9
         for key_idx in (1..10).rev() {
             // inv shift rows 
-            state = self.inv_shift_rows(state);
+            state = self.inv_shift_rows(state)?;
 
             // inv sub bytes 
-            state = self.inv_sub_bytes(state);
+            state = self.inv_sub_bytes(state)?;
 
             // add round key
             state = self.add_round_key(state, ext_key[key_idx])?;
@@ -37,10 +37,10 @@ impl AES {
 
         // round 10
         // sub bytes
-        state = self.inv_shift_rows(state);
+        state = self.inv_shift_rows(state)?;
 
         // shift rows
-        state = self.inv_sub_bytes(state);
+        state = self.inv_sub_bytes(state)?;
 
         // add round key
         state = self.add_round_key(state, ext_key[0])?;

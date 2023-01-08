@@ -3,7 +3,7 @@ use aes::{
     Aes128,
 };
 
-use crate::crypto::{aes_core::AES, aes::{RANDOM_KEY, get_random_aes_key}};
+use crate::crypto::{aes_core::AES, aes::get_random_aes_key};
 
 
 #[test]
@@ -114,8 +114,8 @@ fn check_sub_bytes() {
 
     let state: [u8; 16] = [0, 8, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
-    let tmp = aes.sub_bytes(state);
-    let res = aes.inv_sub_bytes(tmp);
+    let tmp = aes.sub_bytes(state).unwrap();
+    let res = aes.inv_sub_bytes(tmp).unwrap();
 
     assert_eq!(state, res);
 }
@@ -126,8 +126,8 @@ fn check_shift_rows() {
 
     let state: [u8; 16] = [0, 8, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
-    let tmp = aes.shift_rows(state);
-    let res = aes.inv_shift_rows(tmp);
+    let tmp = aes.shift_rows(state).unwrap();
+    let res = aes.inv_shift_rows(tmp).unwrap();
 
     assert_eq!(state, res);
 }
