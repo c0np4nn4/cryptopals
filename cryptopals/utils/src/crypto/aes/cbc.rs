@@ -1,16 +1,10 @@
 use crate::{
     padding::pkcs7::pkcs7, 
     xor::fixed_xor, 
-    crypto::{
-        aes_core::{
-            AES, 
-            key::from_vec
-        }, 
-        CryptoError
-    }
+    crypto::CryptoError
 };
 
-use super::{into_aes_blocks, BLOCK_SIZE};
+use super::{into_aes_blocks, BLOCK_SIZE, core::{AES, key::from_vec}};
 
 pub fn encrypt_cbc(key: Vec<u8>, data: &mut Vec<u8>, iv: [u8; BLOCK_SIZE]) -> Result<Vec<u8>, CryptoError> {
     pkcs7(data, BLOCK_SIZE);

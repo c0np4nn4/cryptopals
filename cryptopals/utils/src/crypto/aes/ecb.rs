@@ -3,12 +3,12 @@ use std::convert::TryInto;
 use lazy_static::lazy_static;
 
 use crate::crypto::CryptoError;
-use crate::crypto::aes_core::AES;
-use crate::crypto::aes_core::key::from_vec;
 use crate::padding::pkcs7::pkcs7;
 use crate::xor::fixed_xor;
 
 use super::BLOCK_SIZE;
+use super::core::AES;
+use super::core::key::from_vec;
 
 pub fn encrypt_ecb(key: Vec<u8>, data: &mut Vec<u8>) -> Result<Vec<u8>, CryptoError> {
     pkcs7(data, BLOCK_SIZE);

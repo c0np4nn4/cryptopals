@@ -1,3 +1,4 @@
+mod core;
 mod cbc;
 mod ctr;
 mod ecb;

@@ -1,4 +1,4 @@
-use crate::crypto::{aes_core::{AES, state::{State, get_columns}}, CryptoError};
+use crate::crypto::{aes::core::{AES, state::{State, get_columns}}, CryptoError};
 
 const MIX_COLUMNS_MATRIX: [u8; 16] = [
     0x02, 0x03, 0x01, 0x01, //

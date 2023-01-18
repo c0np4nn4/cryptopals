@@ -1,6 +1,6 @@
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use utils::{crypto::mt19937::MT19937, attack::mt19937_untempering::untemper};
+use utils::{crypto::{mt19937::core::MT19937, PRNG}, attack::mt19937_untempering::untemper};
 
 fn get_next_state(rng: &mut MT19937) -> Vec<u32> {
     let mut res = vec![];

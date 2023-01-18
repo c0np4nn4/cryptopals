@@ -1,5 +1,5 @@
-mod decrypt;
-mod encrypt;
+pub(crate) mod decrypt;
+pub(crate) mod encrypt;
 pub(crate) mod key;
 pub mod state;
 

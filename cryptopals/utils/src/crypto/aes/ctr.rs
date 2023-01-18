@@ -1,5 +1,5 @@
-use super::into_aes_blocks;
-use crate::{crypto::{aes::from_u64_little_endian, CryptoError, aes_core::{key::from_vec, AES}}, xor::fixed_xor};
+use crate::{crypto::CryptoError, xor::fixed_xor};
+use super::{into_aes_blocks, core::{AES, key::from_vec}, from_u64_little_endian};
 
 pub fn decrypt_ctr(key: Vec<u8>, data: Vec<u8>, nonce: [u8; 8]) -> Result<Vec<u8>, CryptoError> {
     encrypt_ctr(key, data, nonce)

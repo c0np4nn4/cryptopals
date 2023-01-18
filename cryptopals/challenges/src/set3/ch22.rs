@@ -1,7 +1,8 @@
-use utils::crypto::mt19937::MT19937;
 use std::time::{SystemTime, Duration, UNIX_EPOCH};
 use std::thread::sleep;
 use rand::prelude::*;
+use utils::crypto::PRNG;
+use utils::crypto::mt19937::core::MT19937;
 
 fn sleep_for_a_while() {
     // let time = rand::thread_rng().gen_range(40..1000);

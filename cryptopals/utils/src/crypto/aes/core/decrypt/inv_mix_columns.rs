@@ -1,4 +1,4 @@
-use crate::crypto::{aes_core::{AES, state::{State, get_columns}}, CryptoError};
+use crate::crypto::{aes::core::{AES, state::{State, get_columns}}, CryptoError};
 
 const INV_MIX_COLUMNS_MATRIX: [u8; 16] = [
     0x0E, 0x0B, 0x0D, 0x09,

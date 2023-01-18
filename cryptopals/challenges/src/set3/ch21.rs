@@ -1,4 +1,4 @@
-use utils::crypto::mt19937::MT19937;
+use utils::crypto::mt19937::core::MT19937;
 
 #[test]
 fn chal_21() {
