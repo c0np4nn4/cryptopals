@@ -58,7 +58,7 @@ impl Oracle16 {
 
         data.append(&mut postfix);
 
-        encrypt_cbc(self.key.to_vec(), &mut data, self.iv)
+        encrypt_cbc(self.key.to_vec(), data, self.iv)
     }
 
     pub fn decrypt(&self, input_data: Vec<u8>) -> Result<Vec<u8>, OracleError> {

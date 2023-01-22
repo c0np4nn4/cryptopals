@@ -33,6 +33,6 @@ impl Oracle14 {
 
         let mut data = prefix;
 
-        encrypt_ecb(self.key.to_vec(), &mut data)
+        encrypt_ecb(self.key.to_vec(), data)
     }
 }

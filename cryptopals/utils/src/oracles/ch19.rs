@@ -3,7 +3,7 @@ use crate::{
     padding::pkcs7::pkcs7,
 };
 
-use super::Key;
+use super::{Key, OracleError};
 
 pub struct Oracle19 {
     key: Key,
@@ -18,13 +18,13 @@ impl Oracle19 {
         Oracle19 { key, nonce }
     }
 
-    pub fn encrypt(&self, data: Vec<u8>) -> Vec<u8> {
-        let mut data = data;
+    pub fn encrypt(&self, data: Vec<u8>) -> Result<Vec<u8>, OracleError> {
+        let mut pt = data.clone();
 
         if data.len() % 16 != 0 {
-            pkcs7(&mut data, BLOCK_SIZE);
+            pt = pkcs7(&data, BLOCK_SIZE)?;
         }
 
-        encrypt_ctr(self.key.to_vec(), data, self.nonce.clone()).unwrap()
+        encrypt_ctr(self.key.to_vec(), pt, self.nonce.clone())
     }
 }

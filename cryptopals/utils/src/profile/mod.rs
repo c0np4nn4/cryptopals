@@ -79,7 +79,7 @@ impl Profile {
 
     // suppose that security key is managed by the person who had been created the profile
     pub fn encrypt_aes(&self, key: Vec<u8>) -> Result<Vec<u8>, ProfileError> {
-        encrypt_ecb(key, &mut self.encode().as_bytes().to_vec())
+        encrypt_ecb(key, self.encode().as_bytes().to_vec())
     }
 
     pub fn decrypt_aes(key: Vec<u8>, encrypted_profile: Vec<u8>) -> Result<Profile, ProfileError> {

@@ -17,9 +17,9 @@ fn chal_10() {
 
     let mut data = base64_dec(data).unwrap();
 
-    pkcs7(&mut data, BLOCK_SIZE);
+    let padded_data = pkcs7(&mut data, BLOCK_SIZE).unwrap();
 
-    let res = decrypt_cbc(KEY.as_bytes().to_vec(), data, [0u8; BLOCK_SIZE]).unwrap();
+    let res = decrypt_cbc(KEY.as_bytes().to_vec(), padded_data, [0u8; BLOCK_SIZE]).unwrap();
 
     let res: String = res.into_iter().map(|byte| byte as char).collect();
     println!("res: {:?}", res);

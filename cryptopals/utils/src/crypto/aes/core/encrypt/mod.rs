@@ -11,14 +11,16 @@ impl AES {
             return Err(format!("cannot encrypt data, len: {:?} > 16", pt.len()).into());
         }
 
-        let mut pt = pt;
+        let mut state = Vec::<u8>::default();
 
         // padding
         if pt.len() < 16 {
-            pkcs7(&mut pt, BLOCK_SIZE);
+            state = pkcs7(&pt, BLOCK_SIZE)?;
+        } else {
+            state = pt;
         }
 
-        let mut state = state::from_vec(pt)?;
+        let mut state = state::from_vec(state)?;
 
         // key expansion
         let ext_key: [RoundKey; 11] = self.key_expansion()?;

@@ -30,7 +30,7 @@ fn chal_19() {
     let mut ct: Vec<Vec<u8>> = vec![];
 
     for d in data {
-        let c = oracle.encrypt(d);
+        let c = oracle.encrypt(d).unwrap();
 
         ct.push(c);
     }
@@ -50,7 +50,7 @@ fn chal_19() {
         let mut dummy_ct: Vec<Vec<u8>> = vec![];
 
         for _ in 0..2048 {
-            dummy_ct.push(oracle.encrypt(get_dummy_pt(max_len)));
+            dummy_ct.push(oracle.encrypt(get_dummy_pt(max_len)).unwrap());
         }
 
         get_key_stream(dummy_ct, max_len)

@@ -14,7 +14,7 @@ fn chal_12() {
     // 1. finding the block size
     let mut data_clone = data.clone();
 
-    let target = encrypt_ecb_with_unknown_key(&mut data_clone).unwrap();
+    let target = encrypt_ecb_with_unknown_key(data_clone).unwrap();
 
     let mut block_size: usize = 0;
 
@@ -29,7 +29,7 @@ fn chal_12() {
 
         prefix.append(&mut data_clone);
 
-        let comparison = encrypt_ecb_with_unknown_key(&mut prefix).unwrap()[buffer.len()..].to_vec();
+        let comparison = encrypt_ecb_with_unknown_key(prefix).unwrap()[buffer.len()..].to_vec();
 
         if target.eq(&comparison) {
             block_size = size;
@@ -42,7 +42,7 @@ fn chal_12() {
     // 2. detecting the ECB mode
     let mut chunk: Vec<u8> = vec![0x41u8; block_size * 2];
 
-    let res = encrypt_ecb_with_unknown_key(&mut chunk).unwrap();
+    let res = encrypt_ecb_with_unknown_key(chunk).unwrap();
 
     if res[0..block_size].eq(&res[block_size..block_size * 2]) {
         println!("[+] Detect the ECB mode");
@@ -60,7 +60,7 @@ fn chal_12() {
 
         buffer_clone.push(byte);
 
-        let res = encrypt_ecb_with_unknown_key(&mut buffer_clone).unwrap();
+        let res = encrypt_ecb_with_unknown_key(buffer_clone).unwrap();
 
         rainbow_table.insert(res, byte);
     }
@@ -72,7 +72,7 @@ fn chal_12() {
 
         buffer_clone.push(data[idx]);
 
-        let res = encrypt_ecb_with_unknown_key(&mut buffer_clone).unwrap();
+        let res = encrypt_ecb_with_unknown_key(buffer_clone).unwrap();
 
         if let Some(byte) = rainbow_table.get(&res) {
             result.push(*byte);

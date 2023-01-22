@@ -6,8 +6,8 @@ use crate::{
 
 use super::{into_aes_blocks, BLOCK_SIZE, core::{AES, key::from_vec}};
 
-pub fn encrypt_cbc(key: Vec<u8>, data: &mut Vec<u8>, iv: [u8; BLOCK_SIZE]) -> Result<Vec<u8>, CryptoError> {
-    pkcs7(data, BLOCK_SIZE);
+pub fn encrypt_cbc(key: Vec<u8>, data: Vec<u8>, iv: [u8; BLOCK_SIZE]) -> Result<Vec<u8>, CryptoError> {
+    let padded_data = pkcs7(&data, BLOCK_SIZE)?;
 
     let cipher = AES::new(from_vec(key)?);
 
@@ -15,8 +15,8 @@ pub fn encrypt_cbc(key: Vec<u8>, data: &mut Vec<u8>, iv: [u8; BLOCK_SIZE]) -> Re
 
     let mut res = Vec::new();
 
-    for idx in (0..data.len()).step_by(BLOCK_SIZE) {
-        let block: Vec<u8> = data[idx..idx + BLOCK_SIZE].to_vec();
+    for idx in (0..padded_data.len()).step_by(BLOCK_SIZE) {
+        let block: Vec<u8> = padded_data[idx..idx + BLOCK_SIZE].to_vec();
 
         let block: Vec<u8> = fixed_xor(block.to_vec(), previous_block.to_vec())?;
 

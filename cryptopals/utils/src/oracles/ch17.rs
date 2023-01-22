@@ -46,7 +46,7 @@ impl Oracle17 {
 
         // let mut flag = "YELLOW SUBMARINE".as_bytes().to_vec();
 
-        let ciphertext = encrypt_cbc(key.to_vec(), &mut flag, iv)?;
+        let ciphertext = encrypt_cbc(key.to_vec(), flag, iv)?;
 
         let oracle = Oracle17 {
             key,

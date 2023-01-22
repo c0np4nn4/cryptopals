@@ -2,14 +2,18 @@ use std::convert::TryInto;
 
 use super::PaddingError;
 
-pub fn pkcs7(data: &mut Vec<u8>, block_size: usize) {
+pub fn pkcs7(data: &Vec<u8>, block_size: usize) -> Result<Vec<u8>, PaddingError> {
     let pad = block_size - (data.len() % block_size);
+
+    let mut res = data.clone();
 
     if pad <= 16 {
         for _ in 0..pad {
-            data.push(pad.try_into().expect("pad cannot be converted into u8"));
+            res.push(pad.try_into().expect("pad cannot be converted into u8"));
         }
     }
+
+    Ok(res)
 }
 
 pub fn verify_pkcs7(data: &mut Vec<u8>, block_size: usize) -> bool {

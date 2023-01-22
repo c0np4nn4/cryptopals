@@ -30,7 +30,7 @@ fn chal_20() {
     let mut ct: Vec<Vec<u8>> = vec![];
 
     for d in data {
-        let c = oracle.encrypt(d);
+        let c = oracle.encrypt(d).unwrap();
 
         ct.push(c);
     }
@@ -57,7 +57,7 @@ fn chal_20() {
         let mut dummy_ct: Vec<u8> = vec![];
 
         for _ in 0..4096 {
-            let mut a = oracle.encrypt(get_dummy_pt(min_len));
+            let mut a = oracle.encrypt(get_dummy_pt(min_len)).unwrap();
             dummy_ct.append(&mut a);
         }
 

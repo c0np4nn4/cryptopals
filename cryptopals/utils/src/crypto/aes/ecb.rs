@@ -10,15 +10,15 @@ use super::BLOCK_SIZE;
 use super::core::AES;
 use super::core::key::from_vec;
 
-pub fn encrypt_ecb(key: Vec<u8>, data: &mut Vec<u8>) -> Result<Vec<u8>, CryptoError> {
-    pkcs7(data, BLOCK_SIZE);
+pub fn encrypt_ecb(key: Vec<u8>, data: Vec<u8>) -> Result<Vec<u8>, CryptoError> {
+    let padded_data = pkcs7(&data, BLOCK_SIZE)?;
 
     let cipher = AES::new(from_vec(key)?);
 
     let mut res = Vec::new();
 
-    for idx in (0..data.len()).step_by(16) {
-        let block = data[idx..idx + 16].to_vec();
+    for idx in (0..padded_data.len()).step_by(16) {
+        let block = padded_data[idx..idx + 16].to_vec();
 
         let block = cipher.encrypt(block)?;
 
@@ -114,12 +114,12 @@ lazy_static! {
     };
 }
 
-pub fn encrypt_ecb_with_unknown_key(data: &mut Vec<u8>) -> Result<Vec<u8>, CryptoError> {
-    pkcs7(data, BLOCK_SIZE);
+pub fn encrypt_ecb_with_unknown_key(data: Vec<u8>) -> Result<Vec<u8>, CryptoError> {
+    let padded_data = pkcs7(&data, BLOCK_SIZE)?;
 
     let key = RANDOM_KEY.clone();
 
-    let res = encrypt_ecb(key.to_vec(), data)?;
+    let res = encrypt_ecb(key.to_vec(), padded_data)?;
 
     Ok(res)
 }
