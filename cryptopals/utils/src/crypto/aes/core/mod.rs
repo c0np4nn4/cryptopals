@@ -7,8 +7,8 @@ pub mod state;
 mod test;
 
 use self::{key::RoundKey, state::State};
-use crate::xor::fixed_xor;
 use super::CryptoError;
+use crate::xor::fixed_xor;
 
 const BLOCK_SIZE: usize = 16;
 

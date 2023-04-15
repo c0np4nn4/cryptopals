@@ -1,11 +1,11 @@
 pub mod aes_bit_flipping;
-pub mod padding_oracle_attack;
 pub mod mt19937_untempering;
+pub mod padding_oracle_attack;
 
 use crate::{hamming_distance::get_hamming_distance, BoxedError};
 use lazy_static::lazy_static;
-use std::{char, collections::HashMap};
 use std::error::Error;
+use std::{char, collections::HashMap};
 
 pub type AttackError = Box<dyn Error>;
 
@@ -84,7 +84,7 @@ pub fn single_char_key_attack(ct: Vec<u8>) -> Result<SingleCharKeyAttackResult, 
     type KeyCandidate = u8;
     type Score = f64;
 
-    let mut score_table = HashMap::<KeyCandidate,Score>::new();
+    let mut score_table = HashMap::<KeyCandidate, Score>::new();
 
     // finding key based on the score calculated by the frequency attack
     for key_candidate in 0..255 {
@@ -180,6 +180,8 @@ pub fn break_arbitrary_size_repeating_key_xor_cipher(
         .map(|(k, _v)| k)
         .ok_or("expect to get key_size(candidate)")?
         .to_owned();
+
+    println!("key size: {:?}", key_size);
 
     let mut chunks: HashMap<usize, Vec<u8>> = HashMap::<usize, Vec<u8>>::new();
 

@@ -33,7 +33,10 @@ fn chal_4() {
         .ok_or("error")
         .unwrap();
 
-    println!("[set1/ch4] res: {:?}", pt);
+    println!(
+        "[set1/ch4] res: {:?}",
+        String::from_utf8(pt.clone()).unwrap()
+    );
 
     assert_eq!(
         "Now that the party is jumping\n",

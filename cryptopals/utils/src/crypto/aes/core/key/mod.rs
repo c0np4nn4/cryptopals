@@ -1,5 +1,5 @@
-use super::{AES, encrypt::sub_bytes::SUB_BYTES_TABLE};
-use crate::{xor::fixed_xor_word, crypto::CryptoError};
+use super::{encrypt::sub_bytes::SUB_BYTES_TABLE, AES};
+use crate::{crypto::CryptoError, xor::fixed_xor_word};
 
 pub type RoundKey = [u8; 16];
 pub type AesKey = [u8; 16];
