@@ -1,4 +1,3 @@
 use std::fs;
 
-fn main() {
-}
+fn main() {}

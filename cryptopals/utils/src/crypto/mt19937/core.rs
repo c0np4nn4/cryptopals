@@ -58,7 +58,7 @@ impl PRNG for MT19937 {
 
 impl MT19937 {
     pub fn new() -> Self {
-        let mut state:[u32; N] = [0; N];
+        let mut state: [u32; N] = [0; N];
 
         for i in 0..N {
             state[i] = 0;
@@ -66,10 +66,7 @@ impl MT19937 {
 
         let idx: usize = 0;
 
-        MT19937 {
-            state,
-            idx
-        }
+        MT19937 { state, idx }
     }
 
     pub fn new_with_state(input_state: &[u32]) -> Self {
@@ -77,16 +74,13 @@ impl MT19937 {
 
         let idx: usize = 0;
 
-        let mut state:[u32; N] = [0; N];
+        let mut state: [u32; N] = [0; N];
 
         for i in 0..N {
             state[i] = input_state[i];
         }
 
-        MT19937 {
-            state,
-            idx
-        }
+        MT19937 { state, idx }
     }
 
     pub fn init(&mut self, seed: u32) {
@@ -109,8 +103,7 @@ impl MT19937 {
 
     fn twist(&mut self) {
         for i in 0..N {
-            let x = (self.state[i] & UPPER_MASK) 
-                        | (self.state[(i + 1) % N] & LOWER_MASK);
+            let x = (self.state[i] & UPPER_MASK) | (self.state[(i + 1) % N] & LOWER_MASK);
 
             let mut xA = x >> 1;
 

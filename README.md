@@ -1,10 +1,12 @@
 # Cryptopals project
 
-- My solutions of [Cryptopals](https://cryptopals.com/) challenges.
+- My solutions for [Cryptopals](https://cryptopals.com/) challenges.
+
+```bash
+./cryptpl ch8
+```
 
 # Progress
-
-- This project is in progress.
 
 >
 > - [x] Set 1
@@ -16,9 +18,3 @@
 > - [ ] Set 7
 > - [ ] Set 8
 >
-
-# Reference Sites
-
-- Most of the knowledges are from the `WIKI`.
-
-- A lot of youtube videos and blogs are very helpful too.
