@@ -1,7 +1,10 @@
 use super::PRNG;
 
 // 32-bit
-pub fn encrypt<T>(prng: &mut T, pt: Vec<u8>) -> Vec<u8> where T: PRNG{
+pub fn encrypt<T>(prng: &mut T, pt: Vec<u8>) -> Vec<u8>
+where
+    T: PRNG,
+{
     let mut res = Vec::<u8>::default();
 
     let mut pt = pt;
@@ -28,18 +31,21 @@ pub fn encrypt<T>(prng: &mut T, pt: Vec<u8>) -> Vec<u8> where T: PRNG{
 
         res.push(((ct_hex & 0xff_00_00_00) >> 24) as u8);
         res.push(((ct_hex & 0x00_ff_00_00) >> 16) as u8);
-        res.push(((ct_hex & 0x00_00_ff_00) >> 8)  as u8);
-        res.push(((ct_hex & 0x00_00_00_ff) >> 0)  as u8);
+        res.push(((ct_hex & 0x00_00_ff_00) >> 8) as u8);
+        res.push(((ct_hex & 0x00_00_00_ff) >> 0) as u8);
     }
 
     res
 }
 
-pub fn decrypt<T>(prng: &mut T, ct: Vec<u8>) -> Vec<u8> where T: PRNG{
+pub fn decrypt<T>(prng: &mut T, ct: Vec<u8>) -> Vec<u8>
+where
+    T: PRNG,
+{
     let mut res = Vec::<u8>::default();
 
     let mut ct = ct;
-    
+
     while ct.len() % 4 != 0 {
         ct.push(0u8);
     }

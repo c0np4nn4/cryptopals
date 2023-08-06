@@ -1,13 +1,12 @@
-use super::{AES, BLOCK_SIZE, state, key::RoundKey};
+use super::{key::RoundKey, state, AES, BLOCK_SIZE};
 use crate::crypto::CryptoError;
 
+pub mod inv_mix_columns;
 pub mod inv_shift_rows;
 pub mod inv_sub_bytes;
-pub mod inv_mix_columns;
 
 impl AES {
     pub fn decrypt(&self, ct: Vec<u8>) -> Result<Vec<u8>, CryptoError> {
-
         if ct.len() != BLOCK_SIZE {
             return Err(format!("cannot decrypt data, len: {:?} != 16", ct.len()).into());
         }
@@ -22,10 +21,10 @@ impl AES {
 
         // round 1 ~ 9
         for key_idx in (1..10).rev() {
-            // inv shift rows 
+            // inv shift rows
             state = self.inv_shift_rows(state)?;
 
-            // inv sub bytes 
+            // inv sub bytes
             state = self.inv_sub_bytes(state)?;
 
             // add round key

@@ -4,8 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+num-bigint = "0.4.3"
 utils = { path = "../utils" }
 rand = "0.8.5"
+num-traits = "0.2"
 
 [dev-dependencies]
 mersenne_twister = "1.1.1"

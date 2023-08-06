@@ -1,4 +1,7 @@
-use crate::crypto::{aes::core::{AES, state::State}, CryptoError};
+use crate::crypto::{
+    aes::core::{state::State, AES},
+    CryptoError,
+};
 
 impl AES {
     pub(crate) fn inv_shift_rows(&self, prev_state: State) -> Result<State, CryptoError> {

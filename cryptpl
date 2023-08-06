@@ -19,4 +19,4 @@ fi
 challenge=$1
 
 
-cargo test $challenge -- --nocapture
+RUSTFLAGS="-A warnings" cargo test $challenge -- --nocapture
